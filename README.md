@@ -18,6 +18,10 @@ An arrow-snake puzzle for the browser, in plain Canvas + JavaScript with no depe
 - **Share** a cleared level or challenge day (Web Share API, falls back to the clipboard)
 - **Generator** tab: custom size (20–100 cells, up to 35 with Fill) and shape, with an in-app explanation. Unlocks at level 20; never changes your level or league
 
+## Layouts
+- **Phone** (under 860 px wide): bottom tab bar, single column, top HUD bar in the game
+- **Desktop** (860 px and wider): a real desktop layout instead of a stretched phone card. Left sidebar navigation (right side in Persian), a two-column dashboard on the home screen, two-column Challenge / Leagues / Generator pages, wide grids for Collection and Levels, two-column Settings. The game screen has a side panel (difficulty, hearts, progress, Hint / Back / Restart with keyboard-shortcut chips) next to a large framed board, and the Undo / Reset view / Guide lines buttons sit in their own strip under the board. Boards use at most 96 px cells so small levels do not become giant. Narrow desktop windows (860–1139 px) collapse the pages to one column
+
 ## Accessibility
 - Colour-blind friendly option (orange flash, ✓ on completed days) and a high-contrast option (thicker lines, pure black/white, borders)
 - Keyboard play on desktop: ←/→ choose a snake, Enter taps it, H hint, U undo, R restart, Esc back. Focus outlines appear only for keyboard users

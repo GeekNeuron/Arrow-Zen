@@ -11,7 +11,6 @@ button,select{font:inherit;color:var(--btnfg);background:var(--btn);border:0;bor
 button:focus,button:focus-visible,button:active,input:focus{outline:none;box-shadow:none}button:disabled{opacity:.45;cursor:default}
 svg{display:block}.ic{width:24px;height:24px;fill:currentColor}
 #app{position:relative;width:100%;height:100%;background:var(--bg);overflow:hidden}
-@media(min-width:700px){body{display:flex;align-items:center;justify-content:center;background:var(--card)}#app{width:min(520px,calc(100vw - 32px));height:min(780px,calc(100dvh - 32px));border-radius:20px;box-shadow:0 10px 40px #0005}}
 .page{height:100%;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:14px;padding:22px 20px 100px;text-align:center}.page>*{flex-shrink:0}
 .home{justify-content:space-between}.hd{font-size:26px;font-weight:800;margin:0;color:var(--title)}.note{font-size:13px;opacity:.78;line-height:1.7}.note a{color:var(--acc)}
 .pri{background:var(--acc);color:var(--pfg);font-weight:700;border-radius:999px;padding:14px 40px;font-size:18px}.big{width:100%;font-size:22px;padding:18px}
@@ -77,7 +76,71 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
 @keyframes cardIn{from{transform:translateY(46px) scale(.86);opacity:0}to{transform:none;opacity:1}}@keyframes badge{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
 @keyframes dash{from{stroke-dashoffset:176}to{stroke-dashoffset:0}}@keyframes dash2{from{stroke-dashoffset:46}to{stroke-dashoffset:0}}
 @keyframes rise{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}@keyframes starIn{from{transform:scale(0) rotate(-90deg);opacity:0}60%{transform:scale(1.25) rotate(8deg);opacity:1}to{transform:none}}
-.achh{font-size:13px;opacity:.85;text-transform:uppercase;letter-spacing:.5px}</style></head><body>
+.achh{font-size:13px;opacity:.85;text-transform:uppercase;letter-spacing:.5px}
+.cols,.cl,.cr{display:contents}
+#lgIc{order:1}#lgName{order:2}#lgTotal{order:3}#league .row.col{order:4}#league h3{order:5}#ladder{order:6}#lgNote{order:7}
+#chBigIc{order:1}.mp{order:2}.mhead{order:3}#cal{order:4}#chStats{order:5}#chPlay{order:6}.sharebox{order:7}#chDesc{order:8}
+#custom .panel{order:1}#lockNote{order:2}.g-w{order:3}.g-h{order:4}.g-s{order:5}#custom #shapes{order:6}#genBtn{order:7}
+.kb{display:none}
+@media(min-width:600px) and (max-width:859px){.page{padding-inline:max(20px,calc((100% - 560px)/2))}}
+/* ===================== DESKTOP LAYOUT (wide windows) ===================== */
+@media(min-width:860px) and (min-height:520px){
+ #app{display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:minmax(0,1fr);width:100vw;height:100dvh}
+ @media(hover:hover){button:hover:not(:disabled){filter:brightness(1.13)}.card{transition:transform .15s}.card:hover{transform:translateY(-3px)}.tile,.lv:not(.lk){transition:transform .12s}.tile:hover,.lv:not(.lk):hover{transform:translateY(-2px)}}
+ /* sidebar */
+ #nav{grid-column:1;grid-row:1;position:static;flex-direction:column;justify-content:flex-start;gap:6px;padding:28px 16px;background:var(--card)}
+ #nav:before{content:"Arrow Zen";font-size:25px;font-weight:800;color:var(--title);padding:4px 14px 26px;letter-spacing:.5px}
+ #nav button{flex-direction:row;justify-content:flex-start;gap:14px;font-size:15.5px;font-weight:600;padding:13px 16px;border-radius:14px;width:100%;min-width:0}
+ #nav button:hover:not(.on){background:color-mix(in srgb,var(--btn) 45%,transparent);filter:none}
+ #nav .dot{top:50%;transform:translateY(-50%);inset-inline-end:14px}
+ /* pages */
+ .page{grid-column:2;grid-row:1;align-items:stretch;text-align:start;padding:38px max(48px,calc((100% - 1120px)/2)) 56px;gap:22px}
+ .hd{font-size:34px}.note{font-size:14px}.panel{padding:20px 22px}.panel h3{font-size:17px}
+ /* home: hero on one side, dashboard on the other */
+ .home{display:grid;grid-template-columns:minmax(300px,1fr) minmax(440px,1.2fr);grid-template-areas:"brand chip" "brand cards" "play modes";grid-template-rows:auto auto auto;align-content:center;justify-content:stretch;gap:26px 48px}
+ .home .brand{grid-area:brand;align-items:flex-start;justify-content:flex-end;align-self:end;gap:12px}.home .brand h1{font-size:68px;letter-spacing:1px;line-height:1.05}
+ .home .lvlrow{gap:14px}.home .gridbtn{width:48px;height:48px;border-radius:14px}.home .lvl{font-size:36px}.home #homeDiff{font-size:24px}
+ .home .chip{grid-area:chip;justify-self:end;font-size:22px}.home .cards{grid-area:cards;gap:18px}.home .modes{grid-area:modes;gap:18px;align-self:stretch}
+ .home .card{min-height:236px;padding:22px 16px;gap:8px}.home .card b{font-size:19px}.home .card .art{width:100px;height:100px;display:grid}.home .card button{padding:10px 32px;font-size:16px}
+ .home .pill2{padding:20px 22px;font-size:18px;gap:14px}.home .pill2 .ic{width:34px;height:34px}.home .pill2 b{font-size:19px}
+ #playBtn{grid-area:play;align-self:start;max-width:400px;width:100%;font-size:22px;padding:20px}
+ /* two-column pages (leagues, challenge, generator) */
+ .cols{display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);column-gap:56px;align-items:start}.cl,.cr{display:flex;flex-direction:column;gap:18px;min-width:0}
+ #lgIc{align-self:center}#lgName,#lgTotal{text-align:center}
+ #chBigIc{align-self:center;width:170px;height:170px}.mhead{max-width:640px;width:100%}.mhead .hd{font-size:30px}#cal{max-width:640px;gap:12px 6px}.day{width:56px;height:56px;font-size:18px}.wd{font-size:14px;margin-bottom:4px}#chStats{text-align:center}
+ /* collection */
+ #collection .seg{max-width:440px}.pg{align-items:stretch}#grid{grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:14px}.tile{padding:16px}
+ #achList{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+ /* levels */
+ .tiers{justify-content:flex-start}.tier{font-size:13px;padding:4px 12px}.lvgrid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}.lv{padding:12px 4px;border-radius:16px}.lv b{font-size:19px}
+ #custom .cols{grid-template-columns:minmax(300px,480px) minmax(0,1fr)}
+ #custom #shapes{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));justify-content:stretch;align-content:start;gap:10px}#custom #shapes button{width:auto;height:auto;aspect-ratio:1;padding:10px;border-radius:16px}#genBtn{align-self:flex-start}
+ /* settings */
+ #settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start}#settings .row.col{justify-content:space-between}#settings .sws{justify-content:flex-start}#settings>.hd,#settings>.note{grid-column:1/-1}.row{padding:18px 20px}
+ /* game: side panel + large board */
+ #game{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-rows:1fr auto auto auto auto 1fr}
+ #bar{display:contents;direction:inherit}
+ #mid{grid-column:1;grid-row:2;margin:0 26px;background:var(--card);border-radius:22px;padding:20px 16px;gap:10px}#diff{font-size:20px}#lives{gap:6px}#lives .hrt{width:40px;height:40px}.tm{font-size:38px}
+ #track{grid-column:1;grid-row:3;margin:18px 26px 0;height:12px;border-radius:6px;overflow:hidden}#prog{border-radius:6px}
+ #bar #hintBtn{grid-column:1;grid-row:4;margin:20px 26px 0;justify-self:stretch;display:flex;align-items:center;justify-content:flex-start;gap:12px;border-radius:16px;padding:15px 18px;font-size:16px;font-weight:600}
+ #hintBtn .bdg2{margin-inline-start:auto;order:2}#hintBtn .kb{order:3;margin-inline-start:8px}
+ #bar .l{grid-column:1;grid-row:5;justify-self:stretch;margin:12px 26px 0;display:flex;flex-direction:column;gap:10px}
+ #bar .l .cb{width:100%;height:auto;border-radius:16px;display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:14px 18px;font-size:15px;font-weight:600}#bar .l .cb:after{content:attr(aria-label);order:1}#bar .l .cb .kb{order:2}
+ .kb{display:inline-block;font-family:inherit;font-size:12px;font-weight:700;padding:2px 8px;border-radius:7px;background:color-mix(in srgb,var(--fg) 13%,transparent);color:var(--btnfg);margin-inline-start:auto}
+ #wrap{grid-column:2;grid-row:1/-1;padding:30px 30px 30px 6px}html[dir=rtl] #wrap{padding:30px 6px 30px 30px}
+ #area{--reserve:76px;background:color-mix(in srgb,var(--card) 62%,var(--bg));border-radius:28px}
+ .fab{width:auto;height:46px;border-radius:23px;padding:0 18px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;bottom:15px}.fab:after{content:attr(aria-label);order:1}.fab .kb{order:2;margin-inline-start:4px}.fab .bdg{position:static;order:3}
+ #resetBtn{left:16px}#guideBtn{right:16px}
+ .toast{bottom:36px}
+}
+@media(min-width:860px) and (max-width:1139px) and (min-height:520px){
+ #app{grid-template-columns:200px minmax(0,1fr)}#nav button{font-size:14.5px;padding:12px}
+ .page{padding:30px 32px 44px}.cols,#custom .cols{grid-template-columns:minmax(0,1fr);row-gap:22px}
+ .home{grid-template-columns:minmax(0,1fr);grid-template-areas:"chip" "brand" "cards" "modes" "play";justify-items:stretch;gap:22px}
+ .home .brand{align-self:start;align-items:center;text-align:center}.home .chip{justify-self:center}#playBtn{max-width:none}
+ #settings{grid-template-columns:minmax(0,1fr)}#game{grid-template-columns:260px minmax(0,1fr)}#cal{margin-inline:auto}
+}
+</style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--heart) 62%,#fff)"/><stop offset="1" style="stop-color:var(--heart)"/></linearGradient>
 <linearGradient id="sh-bronze" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0B08A"/><stop offset="1" stop-color="#B5603F"/></linearGradient>
@@ -92,23 +155,25 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
 <div class="modes"><button id="taBtn" class="pill2"><i data-ic="timer"></i><span><b data-i="mode_ta"></b><small id="taBest"></small></span></button><button id="endBtn" class="pill2"><i data-ic="inf"></i><span><b data-i="mode_end"></b><small id="endBest"></small></span></button></div>
 <div class="brand"><h1>Arrow Zen</h1><div class="lvlrow"><button id="lvlBtn" class="gridbtn" data-ia="levels"><i data-ic="dots"></i></button><div class="lvl"><span data-i="level"></span> <span id="lvTxt">1</span></div></div><div id="homeDiff"></div></div>
 <button id="playBtn" class="pri big"></button></section>
-<section id="league" class="page"><h2 class="hd" data-i="lg_title"></h2><div class="art" id="lgIc" style="width:128px;height:128px"></div><div class="big2" id="lgName"></div><div class="note" id="lgTotal"></div>
-<div class="row col" style="gap:8px"><div class="pbar"><i id="lgBar" style="width:0"></i></div><span class="note" id="lgXp"></span></div><h3 class="hd" style="font-size:18px" data-i="lg_ladder"></h3><div class="ladder" id="ladder"></div><div class="note" data-i="lg_note"></div></section>
-<section id="challenge" class="page"><div id="chBigIc" class="trophy"></div>
+<section id="league" class="page"><h2 class="hd" data-i="lg_title"></h2><div class="cols"><div class="cl"><div class="art" id="lgIc" style="width:128px;height:128px"></div><div class="big2" id="lgName"></div><div class="note" id="lgTotal"></div>
+<div class="row col" style="gap:8px"><div class="pbar"><i id="lgBar" style="width:0"></i></div><span class="note" id="lgXp"></span></div><div class="note" id="lgNote" data-i="lg_note"></div></div>
+<div class="cr"><h3 class="hd" style="font-size:18px" data-i="lg_ladder"></h3><div class="ladder" id="ladder"></div></div></div></section>
+<section id="challenge" class="page"><div class="cols"><div class="cl"><div id="chBigIc" class="trophy"></div>
 <div class="mp"><div class="mb"><div class="mbar"><i id="mFill"></i></div><b id="mDone" class="mc">0</b></div><span id="mTotal" class="mt">31</span></div>
-<div class="mhead"><button class="cb" id="mPrev" data-ia="a_prev_month"><i data-ic="back"></i></button><h2 class="hd" id="mTitle"></h2><button class="cb" id="mNext" data-ia="a_next_month"><i data-ic="fwd"></i></button></div>
-<div class="cal" id="cal"></div><div class="note" id="chStats"></div><button id="chPlay" class="pri big"></button><div class="panel sharebox"><h3 data-i="ch_share_t"></h3><div class="note" style="font-size:14px" data-i="ch_share_h"></div><pre id="sharePrev" class="prev"></pre><button id="chShare" class="sec" data-i="share_month"></button></div><div class="panel"><div class="note" style="font-size:14px" data-i="ch_desc"></div></div></section>
+<div class="note" id="chStats"></div><button id="chPlay" class="pri big"></button><div class="panel" id="chDesc"><div class="note" style="font-size:14px" data-i="ch_desc"></div></div></div>
+<div class="cr"><div class="mhead"><button class="cb" id="mPrev" data-ia="a_prev_month"><i data-ic="back"></i></button><h2 class="hd" id="mTitle"></h2><button class="cb" id="mNext" data-ia="a_next_month"><i data-ic="fwd"></i></button></div>
+<div class="cal" id="cal"></div><div class="panel sharebox"><h3 data-i="ch_share_t"></h3><div class="note" style="font-size:14px" data-i="ch_share_h"></div><pre id="sharePrev" class="prev"></pre><button id="chShare" class="sec" data-i="share_month"></button></div></div></div></section>
 <section id="levels" class="page"><h2 class="hd" data-i="lv_title"></h2><div class="note" id="lvSum"></div><div id="lvTiers" class="tiers"></div><div id="lvGrid" class="lvgrid"></div><div class="note" data-i="lv_hint"></div></section>
 <section id="collection" class="page"><h2 class="hd" data-i="co_title"></h2><div class="seg" id="coTabs" style="width:100%"><button data-v="shapes" data-i="co_shapes"></button><button data-v="ach" data-i="co_ach"></button></div>
 <div id="coShapes" class="pg"><div class="note" id="coCount"></div><div id="grid"></div><div class="note" id="coTroph"></div><div class="panel"><div class="note" style="font-size:14px" data-i="co_desc"></div></div></div>
 <div id="coAch" class="pg" hidden><div class="note" id="achCount"></div><div id="achList" class="ladder"></div></div></section>
-<section id="custom" class="page"><h2 class="hd" data-i="gen_title"></h2>
+<section id="custom" class="page"><h2 class="hd" data-i="gen_title"></h2><div class="cols"><div class="cl">
 <div class="panel"><div class="note" style="font-size:14px" data-i="gen_intro"></div><h3 data-i="gen_how"></h3><ul><li data-i="gen_b1"></li><li data-i="gen_b2"></li><li data-i="gen_b3"></li><li data-i="gen_b4"></li></ul></div>
 <div class="note" id="lockNote" hidden data-i="gen_locked"></div>
-<div class="sl"><span><em style="font-style:normal" data-i="gen_w"></em><b id="cwV">35</b></span><input id="cw" type="range" min="20" max="100" value="35"><small data-i="gen_w_h"></small></div>
-<div class="sl"><span><em style="font-style:normal" data-i="gen_h"></em><b id="chV">35</b></span><input id="ch" type="range" min="20" max="100" value="35"><small data-i="gen_h_h"></small></div>
-<div class="sl"><span><em style="font-style:normal" data-i="gen_shape"></em><b id="genCells"></b></span><small data-i="gen_shape_h"></small></div><div id="shapes"></div>
-<button id="genBtn" class="pri" data-i="gen_go"></button></section>
+<div class="sl g-w"><span><em style="font-style:normal" data-i="gen_w"></em><b id="cwV">35</b></span><input id="cw" type="range" min="20" max="100" value="35"><small data-i="gen_w_h"></small></div>
+<div class="sl g-h"><span><em style="font-style:normal" data-i="gen_h"></em><b id="chV">35</b></span><input id="ch" type="range" min="20" max="100" value="35"><small data-i="gen_h_h"></small></div>
+<button id="genBtn" class="pri" data-i="gen_go"></button></div>
+<div class="cr"><div class="sl g-s"><span><em style="font-style:normal" data-i="gen_shape"></em><b id="genCells"></b></span><small data-i="gen_shape_h"></small></div><div id="shapes"></div></div></div></section>
 <section id="settings" class="page"><h2 class="hd" data-i="st_title"></h2>
 <div class="row col"><span data-i="st_lang"></span><div class="seg" id="langSel"><button data-v="en">English</button><button data-v="fa">فارسی</button></div></div>
 <div class="row col"><span data-i="st_theme"></span><div class="sws" id="themeRow"></div></div>
@@ -121,9 +186,9 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
 </section>
 <nav id="nav"><button data-p="home"><i data-ic="home"></i><span data-i="nav_home"></span></button><button data-p="challenge"><i data-ic="cal"></i><span data-i="nav_challenge"></span><b class="dot" id="chDot"></b></button>
 <button data-p="collection"><i data-ic="stars"></i><span data-i="nav_collection"></span></button><button data-p="custom"><i data-ic="gen"></i><span data-i="nav_generator"></span></button><button data-p="settings"><i data-ic="gear"></i><span data-i="nav_settings"></span></button></nav>
-<section id="game" hidden><div id="bar"><div class="l"><button class="cb" id="backBtn" data-ia="a_back"><i data-ic="back"></i></button><button class="cb" id="restartBtn" data-ia="a_restart"><i data-ic="restart"></i></button><button class="cb" id="regenBtn" data-ia="a_new"><i data-ic="shuffle"></i></button></div>
-<div id="mid"><div id="diff"></div><div id="lives"></div></div><button id="hintBtn"><i data-ic="bulb"></i><span data-i="hint"></span><em id="hintCnt" class="bdg2"></em></button></div>
-<div id="track"><div id="prog"></div></div><div id="wrap"><div id="area"><canvas id="cv"></canvas><button class="fab" id="resetBtn" data-ia="a_reset"><i data-ic="fit"></i></button><button class="fab" id="undoBtn" data-ia="a_undo"><i data-ic="undo"></i><em id="undoCnt" class="bdg"></em></button><button class="fab" id="guideBtn" data-ia="a_guides"><i data-ic="hash"></i></button>
+<section id="game" hidden><div id="bar"><div class="l"><button class="cb" id="backBtn" data-ia="a_back"><i data-ic="back"></i><kbd class="kb">Esc</kbd></button><button class="cb" id="restartBtn" data-ia="a_restart"><i data-ic="restart"></i><kbd class="kb">R</kbd></button><button class="cb" id="regenBtn" data-ia="a_new"><i data-ic="shuffle"></i></button></div>
+<div id="mid"><div id="diff"></div><div id="lives"></div></div><button id="hintBtn"><i data-ic="bulb"></i><span data-i="hint"></span><em id="hintCnt" class="bdg2"></em><kbd class="kb">H</kbd></button></div>
+<div id="track"><div id="prog"></div></div><div id="wrap"><div id="area"><canvas id="cv"></canvas><button class="fab" id="resetBtn" data-ia="a_reset"><i data-ic="fit"></i></button><button class="fab" id="undoBtn" data-ia="a_undo"><i data-ic="undo"></i><em id="undoCnt" class="bdg"></em><kbd class="kb">U</kbd></button><button class="fab" id="guideBtn" data-ia="a_guides"><i data-ic="hash"></i></button>
 <div class="ov" id="loadOv" hidden><span data-i="loading"></span><div id="loadT"><div id="loadBar"></div></div></div>
 <div class="ov" id="winOv" hidden><div class="wcard"><div class="wbadge"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="wc" cx="32" cy="32" r="28"/><path class="wk" d="M19 33.5l9.5 9.5L46 24"/></svg></div><div class="wtitle" data-i="won"></div><div id="winStars" class="stars"></div><div id="winXp" class="wxp" hidden></div><div id="winAch" class="achl"></div><div class="btns"><button id="shareBtn" class="sec" data-i="share"></button><button id="nextBtn" data-i="next"></button></div></div></div>
 <div class="ov" id="overOv" hidden><span id="overMsg" data-i="lost"></span><span id="overSub" hidden></span><button id="retryBtn" data-i="retry"></button></div></div></div></section>

@@ -1,7 +1,7 @@
 // Arrow Zen. Derived from robmat/arrows_game (GPL-3.0). The generator lives in generator.js (also used by worker.js).
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
-const HINTS=3,UNDOS=3,TA_START=90,TA_BONUS=8,TA_PEN=5;
+const MAXCS=96,HINTS=3,UNDOS=3,TA_START=90,TA_BONUS=8,TA_PEN=5;
 const mk=(bg,snake,acc,o={})=>Object.assign({bg,snake,acc,btn:'#2A5254',btnfg:'#fff',fg:'#fff',card:'#2A5254',track:'#2A5254',prog:'#00E676',heart:'#FF5252',pfg:'#10201f',title:acc,inv:'invert(1)'},o);
 const THEMES={
  Night:{dot:'#383D53',bg:'#1E202D',snake:'#ABB6F4',acc:'#5B72FF',btn:'#40466A',btnfg:'#AFB6E2',fg:'#D7DCF0',card:'#282D40',track:'#282D40',prog:'#5B72FF',heart:'#FF4B5E',pfg:'#fff',title:'#D7DCF0',inv:'invert(1)'},
@@ -24,7 +24,7 @@ function theme(){const t=THEMES[P.theme],s=document.documentElement.style,lum=h=
 let winInfo=null,custom=null,curShape=null,prevLives=null,hintsLeft=HINTS,undosLeft=UNDOS,undoStack=[],run=null,runTimer=null,runLast=0,kSel=null,kbdMode=false,lastWin=null,lvl,initial,lives,maxLives,total,won=false,loading=true,flashId=null,flashStart=0,flashT=0,removal=new Map(),entry=new Map(),entering=false,entryTimer=null,
  sc=K.DEFS,ox=0,oy=0,guide=false,guideA=0,guideT=0,guideFrom=0,guideTo=0,win=null,W=0,H=0,dpr=1;
 const cv=$('cv'),ctx=cv.getContext('2d');
-function resize(){const r=cv.parentElement.getBoundingClientRect();dpr=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px'}
+function resize(){const r=cv.parentElement.getBoundingClientRect(),res=parseFloat(getComputedStyle(cv.parentElement).getPropertyValue('--reserve'))||0;dpr=devicePixelRatio||1;W=r.width;H=Math.max(40,r.height-res);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px'}
 const HEART='M12 21.2c-.4 0-.8-.1-1.1-.4C6.2 16.6 3 13.6 3 9.9 3 7.2 5.1 5 7.8 5c1.7 0 3.3.9 4.2 2.2C12.9 5.9 14.5 5 16.2 5 18.9 5 21 7.2 21 9.9c0 3.7-3.2 6.7-7.9 10.9-.3.3-.7.4-1.1.4z';
 const heartSvg=(on,pop)=>`<svg class="hrt ${on?'on':'off'}${pop?' pop':''}" viewBox="0 0 24 24"><path d="${HEART}"${on?' fill="url(#hg)"':''}/>${on?'<path class="gl" d="M7.2 8.4c.5-1.1 1.4-1.7 2.5-1.7"/>':''}</svg>`;
 const DIFF=[[10,'easy','#34C77B'],[25,'normal','#5B72FF'],[50,'hard','#FF9F43'],[100,'expert','#FF5B5B'],[200,'super','#E5389B'],[400,'nightmare','#9B5CFF'],[800,'legendary','#FFC83D'],[1e9,'mythic','#2FE0D0']];
@@ -105,7 +105,7 @@ function animateRemoval(id){const dur=K.REM[P.speed]||600;removal.set(id,0);let 
 function removed(id){const sn=lvl.snakes.find(s=>s.id===id);if(sn)undoStack.push(sn);lvl={...lvl,snakes:lvl.snakes.filter(s=>s.id!==id)};hud();
  if(!lvl.snakes.length){won=true;clearSave();if(run)boardDone();else{onWin();startWin(sn);setTimeout(showWin,reduced()?200:1100)}}
  else persist()}
-function toGrid(x,y){const cx=W/2,cy=H/2,tx=(x-ox-cx)/sc+cx,ty=(y-oy-cy)/sc+cy,cs=Math.min(W/lvl.w,H/lvl.h);
+function toGrid(x,y){const cx=W/2,cy=H/2,tx=(x-ox-cx)/sc+cx,ty=(y-oy-cy)/sc+cy,cs=Math.min(W/lvl.w,H/lvl.h,MAXCS);
  return[(tx-(W-cs*lvl.w)/2)/cs,(ty-(H-cs*lvl.h)/2)/cs]}
 function activate(s,ob){
  if(ob){if(run&&run.type==='ta'){run.time=Math.max(0,run.time-TA_PEN);hud()}
@@ -149,7 +149,7 @@ function drawDots(cs,col){const a=occ(),w=lvl.w,h=lvl.h,wl=lvl.walls,r=cs*.12;ct
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(a[y*w+x]||(wl&&wl[x][y]))continue;const cx=(x+.5)*cs,cy=(y+.5)*cs;ctx.moveTo(cx+r,cy);ctx.arc(cx,cy,r,0,6.2832)}ctx.fill()}
 function draw(now){requestAnimationFrame(draw);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
  if(guideT){const k=Math.min(1,(now-guideT)/K.GUIDE_MS);guideA=guideFrom+(guideTo-guideFrom)*k;if(k>=1)guideT=0}
- if(lvl&&!loading){const col=theme(),cs=Math.min(W/lvl.w,H/lvl.h),bw=cs*lvl.w,bh=cs*lvl.h,L=(W-bw)/2,T=(H-bh)/2;
+ if(lvl&&!loading){const col=theme(),cs=Math.min(W/lvl.w,H/lvl.h,MAXCS),bw=cs*lvl.w,bh=cs*lvl.h,L=(W-bw)/2,T=(H-bh)/2;
   const m={cs,sw:cs*K.STROKE*(P.hc?1.35:1),R:cs*K.CORNER,ah:cs*K.ARROW,move:Math.max(W,H)*K.MOVE};
   ctx.save();ctx.translate(W/2+ox,H/2+oy);const bump=win?1+.028*Math.sin(Math.min(1,(now-win.t0)/450)*Math.PI):1;ctx.scale(sc*bump,sc*bump);ctx.translate(-W/2,-H/2);ctx.translate(L,T);
   if(!entering&&cs*sc>7)drawDots(cs,col);
