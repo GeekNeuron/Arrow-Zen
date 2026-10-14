@@ -1,6 +1,6 @@
 // Arrow Zen service worker: precaches the app shell so the game runs offline.
 // Bump VERSION whenever you ship new files so old caches are dropped.
-const VERSION='arrow-zen-v6';
+const VERSION='arrow-zen-v7';
 const CORE=[
  "./",
  "index.html",
@@ -93,7 +93,27 @@ const CORE=[
  "assets/shapes/whale.png",
  "assets/shapes/windmill.png",
  "assets/shapes/wrench.png",
- "assets/shapes/zap.png"
+ "assets/shapes/zap.png",
+ "assets/shapes/banana.png",
+ "assets/shapes/bee.png",
+ "assets/shapes/book.png",
+ "assets/shapes/bubble.png",
+ "assets/shapes/burger.png",
+ "assets/shapes/camera.png",
+ "assets/shapes/clock.png",
+ "assets/shapes/donut.png",
+ "assets/shapes/frog.png",
+ "assets/shapes/gamepad.png",
+ "assets/shapes/ladybug.png",
+ "assets/shapes/lighthouse.png",
+ "assets/shapes/magnifier.png",
+ "assets/shapes/pencil.png",
+ "assets/shapes/pin.png",
+ "assets/shapes/pizza.png",
+ "assets/shapes/planet.png",
+ "assets/shapes/pumpkin.png",
+ "assets/shapes/strawberry.png",
+ "assets/shapes/ufo.png"
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

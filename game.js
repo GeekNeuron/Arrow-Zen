@@ -21,14 +21,14 @@ function theme(){const t=THEMES[P.theme],s=document.documentElement.style,lum=h=
  document.querySelector('meta[name=theme-color]').content=t.bg;
  return{bg:t.bg,acc:t.acc,snake,dot:P.hc?mixc(t.bg,snake,.4):(t.dot||mixc(t.bg,t.snake,.18))}}
 
-let winInfo=null,custom=null,curShape=null,prevLives=null,hintsLeft=HINTS,undosLeft=UNDOS,undoStack=[],run=null,runTimer=null,runLast=0,kSel=null,kbdMode=false,lastWin=null,lvl,initial,lives,maxLives,total,won=false,loading=true,flashId=null,flashStart=0,flashT=0,removal=new Map(),entry=new Map(),entering=false,entryTimer=null,
+let dotT=new Map(),winInfo=null,custom=null,curShape=null,prevLives=null,hintsLeft=HINTS,undosLeft=UNDOS,undoStack=[],run=null,runTimer=null,runLast=0,kSel=null,kbdMode=false,lastWin=null,lvl,initial,lives,maxLives,total,won=false,loading=true,flashId=null,flashStart=0,flashT=0,removal=new Map(),entry=new Map(),entering=false,entryTimer=null,
  sc=K.DEFS,ox=0,oy=0,guide=false,guideA=0,guideT=0,guideFrom=0,guideTo=0,win=null,W=0,H=0,dpr=1;
 const cv=$('cv'),ctx=cv.getContext('2d');
 function resize(){const r=cv.parentElement.getBoundingClientRect(),res=parseFloat(getComputedStyle(cv.parentElement).getPropertyValue('--reserve'))||0;dpr=devicePixelRatio||1;W=r.width;H=Math.max(40,r.height-res);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px'}
 const HEART='M12 21.2c-.4 0-.8-.1-1.1-.4C6.2 16.6 3 13.6 3 9.9 3 7.2 5.1 5 7.8 5c1.7 0 3.3.9 4.2 2.2C12.9 5.9 14.5 5 16.2 5 18.9 5 21 7.2 21 9.9c0 3.7-3.2 6.7-7.9 10.9-.3.3-.7.4-1.1.4z';
 const heartSvg=(on,pop)=>`<svg class="hrt ${on?'on':'off'}${pop?' pop':''}" viewBox="0 0 24 24"><path d="${HEART}"${on?' fill="url(#hg)"':''}/>${on?'<path class="gl" d="M7.2 8.4c.5-1.1 1.4-1.7 2.5-1.7"/>':''}</svg>`;
-const DIFF=[[10,'easy','#34C77B'],[25,'normal','#5B72FF'],[50,'hard','#FF9F43'],[100,'expert','#FF5B5B'],[200,'super','#E5389B'],[400,'nightmare','#9B5CFF'],[800,'legendary','#FFC83D'],[1e9,'mythic','#2FE0D0']];
-const levelDiff=n=>{const d=DIFF.find(x=>n<x[0]);return{k:d[1],c:d[2]}};
+const DIFF=[['easy','#34C77B'],['normal','#5B72FF'],['hard','#FF9F43'],['expert','#FF5B5B'],['super','#E5389B'],['nightmare','#9B5CFF'],['legendary','#FFC83D'],['mythic','#2FE0D0']];
+const levelDiff=n=>{const t=levelTier(n),d=DIFF[t];return{k:d[0],c:d[1],t}};
 const dg=s=>P.lang==='fa'?String(s).replace(/\d/g,c=>'۰۱۲۳۴۵۶۷۸۹'[c]):String(s);
 const fmtT=t=>{const s=Math.ceil(t);return dg(Math.floor(s/60)+':'+String(s%60).padStart(2,'0'))};
 function setDiff(){const e=$('diff');
@@ -57,7 +57,7 @@ function startEntry(){clearInterval(entryTimer);entry=new Map();entering=false;c
 function resetView(){sc=K.DEFS;ox=oy=0}
 function setLevel(l,ml,cur,ln,x){x=x||{};initial={w:l.w,h:l.h,snakes:l.snakes.slice(),walls:l.walls||null};lvl=cur||{w:l.w,h:l.h,snakes:l.snakes.slice(),walls:l.walls||null};prevLives=null;
  $('regenBtn').hidden=!(custom&&custom.w);$('restartBtn').hidden=!!(custom&&custom.mode);total=l.snakes.length;won=false;maxLives=ml;lives=ln==null?ml:ln;hintsLeft=x.hints==null?HINTS:x.hints;undosLeft=x.undos==null?UNDOS:x.undos;undoStack=x.stack||[];kSel=null;
- flashId=null;removal=new Map();resetView();loading=false;$('loadOv').hidden=true;if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();hud();startEntry();win=null;persist()}
+ flashId=null;removal=new Map();resetView();loading=false;$('loadOv').hidden=true;if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();hud();startEntry();win=null;dotT.clear();persist()}
 function setProg(p){$('loadBar').style.width=(p*100)+'%'}
 function runGen(c,walls,fill,seed,cb){const inline=()=>setTimeout(()=>{setSeed(seed);const l=generate(c.w,c.h,c.maxLen,walls,fill,setProg);setSeed(null);cb(l)},30);let wk;
  try{wk=new Worker('worker.js')}catch{return inline()}
@@ -82,11 +82,11 @@ async function newLevel(c){custom=c||null;clearSave();hidePages();$('game').hidd
  runGen(cfg,walls,fill,seed,l=>setLevel(l,cfg.lives,null,custom&&custom.mode==='endless'&&run?run.lives:null))}
 function play(){const s=readSave();if(!s)return newLevel();custom=s.custom;curShape=s.shape||null;hidePages();$('game').hidden=false;$('winOv').hidden=$('overOv').hidden=true;$('overSub').hidden=true;resize();
  setLevel(s.initial,s.maxLives,s.cur,s.lives,{hints:s.hints,undos:s.undos,stack:s.stack});if(lives<=0)over()}
-function restart(){if(!initial||loading||run)return;clearInterval(entryTimer);lvl={w:initial.w,h:initial.h,snakes:initial.snakes.slice(),walls:initial.walls||null};total=lvl.snakes.length;won=false;lives=maxLives;hintsLeft=HINTS;undosLeft=UNDOS;undoStack=[];prevLives=null;flashId=null;removal=new Map();resetView();$('overOv').hidden=$('winOv').hidden=true;hud();startEntry();persist()}
+function restart(){if(!initial||loading||run)return;clearInterval(entryTimer);dotT.clear();lvl={w:initial.w,h:initial.h,snakes:initial.snakes.slice(),walls:initial.walls||null};total=lvl.snakes.length;won=false;lives=maxLives;hintsLeft=HINTS;undosLeft=UNDOS;undoStack=[];prevLives=null;flashId=null;removal=new Map();resetView();$('overOv').hidden=$('winOv').hidden=true;hud();startEntry();persist()}
 function flash(id){flashId=id;flashStart=performance.now();clearTimeout(flashT);setTimeout(()=>{if(flashId===id)flashId=null},K.FLASH_MS)}
 function hint(){if(hintsLeft<=0||loading||won||lives<=0||entering||$('game').hidden)return;resetView();const id=findRemovable(lvl);if(id==null)return;flash(id);hintsLeft--;P.stats.hints++;save();hud();persist()}
 function fadeIn(id){entry.set(id,0);let el=0;const h=setInterval(()=>{el+=K.FRAME;const l=Math.min(1,el/260);entry.set(id,1-Math.pow(1-l,3));if(l>=1){clearInterval(h);entry.delete(id)}},K.FRAME)}
-function undo(){if(undosLeft<=0||!undoStack.length||loading||won||lives<=0||entering||removal.size||$('game').hidden)return;const s=undoStack.pop();lvl={...lvl,snakes:[...lvl.snakes,s]};undosLeft--;P.stats.undos++;save();flashId=null;fadeIn(s.id);hud();persist()}
+function undo(){if(undosLeft<=0||!undoStack.length||loading||won||lives<=0||entering||removal.size||$('game').hidden)return;const s=undoStack.pop();s.body.forEach(p=>dotT.delete(p.y*lvl.w+p.x));lvl={...lvl,snakes:[...lvl.snakes,s]};undosLeft--;P.stats.undos++;save();flashId=null;fadeIn(s.id);hud();persist()}
 // ---- timed / endless runs
 function startRun(type){const sv=readSave();if(sv&&!confirm(tt('confirm_discard')))return;clearSave();run={type,score:0,time:TA_START,lives:3,over:false};startTimer();nextBoard()}
 function nextBoard(){newLevel({mode:run.type,lv:run.type==='ta'?2+(run.score>>1):1+run.score})}
@@ -102,7 +102,7 @@ function over(){if(run){endRun();return}$('overMsg').textContent=tt('lost');$('o
 function animateRemoval(id){const dur=K.REM[P.speed]||600;removal.set(id,0);let el=0;
  const h=setInterval(()=>{el+=K.FRAME;const lp=Math.min(1,el/dur);removal.set(id,lp*lp*lp);
   if(el>=dur){clearInterval(h);removal.set(id,1);removed(id);removal.delete(id)}},K.FRAME)}
-function removed(id){const sn=lvl.snakes.find(s=>s.id===id);if(sn)undoStack.push(sn);lvl={...lvl,snakes:lvl.snakes.filter(s=>s.id!==id)};hud();
+function removed(id){const sn=lvl.snakes.find(s=>s.id===id);if(sn){undoStack.push(sn);if(!reduced()){const n=sn.body.length,step=Math.min(34,700/n),t0=performance.now();sn.body.forEach((p,i)=>dotT.set(p.y*lvl.w+p.x,t0+i*step))}}lvl={...lvl,snakes:lvl.snakes.filter(s=>s.id!==id)};hud();
  if(!lvl.snakes.length){won=true;clearSave();if(run)boardDone();else{onWin();startWin(sn);setTimeout(showWin,reduced()?200:1100)}}
  else persist()}
 function toGrid(x,y){const cx=W/2,cy=H/2,tx=(x-ox-cx)/sc+cx,ty=(y-oy-cy)/sc+cy,cs=Math.min(W/lvl.w,H/lvl.h,MAXCS);
@@ -145,14 +145,16 @@ function showWin(){$('winOv').hidden=false;const w=winInfo;if(!w||!w.xp||reduced
 const sg=Math.sign;
 let occC={l:null,g:null};
 function occ(){if(occC.l!==lvl){const a=new Uint8Array(lvl.w*lvl.h);lvl.snakes.forEach(s=>s.body.forEach(p=>a[p.y*lvl.w+p.x]=1));occC={l:lvl,g:a}}return occC.g}
-function drawDots(cs,col){const a=occ(),w=lvl.w,h=lvl.h,wl=lvl.walls,r=cs*.12;ctx.globalAlpha=1;ctx.fillStyle=col.dot;ctx.beginPath();
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(a[y*w+x]||(wl&&wl[x][y]))continue;const cx=(x+.5)*cs,cy=(y+.5)*cs;ctx.moveTo(cx+r,cy);ctx.arc(cx,cy,r,0,6.2832)}ctx.fill()}
+function drawDots(cs,col,now){const a=occ(),w=lvl.w,h=lvl.h,wl=lvl.walls,r=cs*.12,e=v=>v*v*(3-2*v);ctx.globalAlpha=1;ctx.fillStyle=col.dot;ctx.beginPath();
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(a[y*w+x]||(wl&&wl[x][y]))continue;const i=y*w+x,t0=dotT.get(i);let k=1;
+  if(t0!==undefined){const u=(now-t0)/300;if(u<0)continue;if(u>=1)dotT.delete(i);else k=u<.55?e(u/.55)*1.45:1.45-.45*e((u-.55)/.45)}
+  const cx=(x+.5)*cs,cy=(y+.5)*cs;ctx.moveTo(cx+r*k,cy);ctx.arc(cx,cy,r*k,0,6.2832)}ctx.fill()}
 function draw(now){requestAnimationFrame(draw);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
  if(guideT){const k=Math.min(1,(now-guideT)/K.GUIDE_MS);guideA=guideFrom+(guideTo-guideFrom)*k;if(k>=1)guideT=0}
  if(lvl&&!loading){const col=theme(),cs=Math.min(W/lvl.w,H/lvl.h,MAXCS),bw=cs*lvl.w,bh=cs*lvl.h,L=(W-bw)/2,T=(H-bh)/2;
   const m={cs,sw:cs*K.STROKE*(P.hc?1.35:1),R:cs*K.CORNER,ah:cs*K.ARROW,move:Math.max(W,H)*K.MOVE};
   ctx.save();ctx.translate(W/2+ox,H/2+oy);const bump=win?1+.028*Math.sin(Math.min(1,(now-win.t0)/450)*Math.PI):1;ctx.scale(sc*bump,sc*bump);ctx.translate(-W/2,-H/2);ctx.translate(L,T);
-  if(!entering&&cs*sc>7)drawDots(cs,col);
+  if(!entering&&cs*sc>7)drawDots(cs,col,now);
   drawWin(now,cs,col);
   if(guideA>0)lvl.snakes.forEach(s=>{if(removal.has(s.id)||entry.has(s.id))return;const h=s.body[0],hx=(h.x+.5)*cs,hy=(h.y+.5)*cs;
    const ex=s.dir.dx>0?W-L:s.dir.dx<0?-L:hx,ey=s.dir.dy>0?H-T:s.dir.dy<0?-T:hy;
@@ -166,7 +168,7 @@ function mixc(bg,fg,t){const a=rgb(bg),b=rgb(fg);return`rgb(${a.map((v,i)=>Math.
 function drawSnake(s,m,col,pulse){
  const ep=entry.get(s.id);let p,shift,al;
  if(ep!=null){p=1-Math.min(1,Math.max(0,ep));shift=0;al=Math.min(ep*2.5,1)}else{const r=Math.min(1,Math.max(0,removal.get(s.id)||0));p=r;shift=m.move*r;al=1-r}
- const fl=s.id===flashId;ctx.globalAlpha=1;const colr=mixc(col.bg,fl?(P.cb?'#FF8A00':'#FF0000'):col.snake,Math.min(1,Math.max(0,fl?al*pulse:al)));
+ const fl=s.id===flashId,ex=!fl&&ep==null&&removal.has(s.id);ctx.globalAlpha=1;const colr=mixc(col.bg,fl?(P.cb?'#FF8A00':'#FF0000'):ex?(P.cb?'#2EC4D6':'#FF9F43'):col.snake,Math.min(1,Math.max(0,fl?al*pulse:al)));
  const b=s.body,n=b.length,d=s.dir,cs=m.cs,R=m.R,c=q=>(q+.5)*cs;
  const hx0=c(b[0].x),hy0=c(b[0].y),bx0=hx0+d.dx*R,by0=hy0+d.dy*R,lx=hx0+d.dx*shift+d.dx*R,ly=hy0+d.dy*shift+d.dy*R;
  ctx.strokeStyle=ctx.fillStyle=colr;ctx.lineWidth=m.sw;ctx.lineCap=ctx.lineJoin='round';
@@ -267,7 +269,7 @@ const RENDER={
   $('leagueIc').innerHTML=shield(tr.id);$('leagueName').textContent=tt('tier_'+tr.id);
   $('chDate').textContent=new Date().toLocaleDateString(calLoc(),{month:'long',day:'numeric'});$('chIc').innerHTML=cup(done);$('chBtn').textContent=done?tt('done'):tt('play');$('chCard').classList.toggle('done',done);$('taBest').textContent=tt('mode_best',{n:nf(P.stats.taBest)});$('endBest').textContent=tt('mode_best',{n:nf(P.stats.endBest)})},
  levels(){const top=P.level,tot=Object.values(P.stars).reduce((a,b)=>a+b,0);$('lvSum').textContent=tt('lv_sum',{a:nf(tot),b:nf((top-1)*3)});
-  $('lvTiers').innerHTML=DIFF.map((d,i)=>{const lo=i?DIFF[i-1][0]:1;return`<span class="tier" style="--c:${d[2]}">${tt('diff_'+d[1])} ${nf(lo)}${i===DIFF.length-1?'+':'–'+nf(d[0]-1)}</span>`}).join('');
+  $('lvTiers').innerHTML=DIFF_WIN.slice(0,-1).map((lo,k)=>{const hi=DIFF_WIN[k+1]-1,a=DIFF[k],b=DIFF[k+1];return`<span class="tier${P.level>=lo&&P.level<=hi?' cur':''}"><i style="background:${a[1]}"></i><i style="background:${b[1]}"></i>${nf(lo)}–${nf(hi)} · ${tt('diff_'+a[0])} / ${tt('diff_'+b[0])}</span>`}).join('')+`<span class="tier${P.level>=DIFF_WIN[7]?' cur':''}"><i style="background:${DIFF[7][1]}"></i>${nf(DIFF_WIN[7])}+ · ${tt('diff_mythic')}</span>`;
   $('lvGrid').innerHTML=Array.from({length:top+3},(_,i)=>{const n=i+1,lk=n>top;return`<button class="lv${n===top?' cur':''}${lk?' lk':''}" style="--c:${levelDiff(n).c}" data-n="${n}"${lk?' disabled':''}><b>${nf(n)}</b><span>${lk?ic(IC.lock).replace('class="ic"','class="ic lk"'):starsHtml(P.stars[n]||0)}</span></button>`}).join('')},
  league(){const xp=P.xp||0,tr=tierOf(xp);$('lgIc').innerHTML=shield(tr.id);$('lgName').textContent=tt('tier_'+tr.id);$('lgTotal').textContent=tt('lg_total',{n:nf(xp)});
   const nx=tr.next;$('lgBar').style.width=(nx?(xp-tr.xp)/(nx.xp-tr.xp)*100:100)+'%';$('lgXp').textContent=nx?tt('lg_xp',{a:nf(xp-tr.xp),b:nf(nx.xp-tr.xp)}):tt('lg_max');
@@ -292,7 +294,10 @@ const RENDER={
  custom(){const lk=P.level<K.GEN_UNLOCK;$('lockNote').hidden=!lk;$('genBtn').disabled=lk;syncSliders()},
  settings(){syncSet()}};
 // ---- settings
-const renderTheme=()=>{$('themeRow').innerHTML=Object.keys(THEMES).map(k=>`<button class="sw" data-t="${k}" title="${tt('th_'+k)}" aria-label="${tt('th_'+k)}" style="--a:${THEMES[k].bg};--b:${THEMES[k].snake}"></button>`).join('')};
+const renderTheme=()=>{$('themeRow').innerHTML=Object.keys(THEMES).map(k=>{const t=THEMES[k],dot=t.dot||mixc(t.bg,t.snake,.18);
+ const dots=[0,1,2].map(r=>[0,1,2,3,4].map(c=>`<circle cx="${12+c*17}" cy="${14+r*16}" r="2.6" fill="${dot}"/>`).join('')).join('');
+ const svg=`<svg viewBox="0 0 120 76" aria-hidden="true"><rect width="120" height="76" rx="10" fill="${t.bg}"/>${dots}<path d="M14 60H58a11 11 0 0 0 11-11V32" fill="none" stroke="${t.snake}" stroke-width="7" stroke-linecap="round"/><path d="M69 17l10 15H59z" fill="${t.snake}" stroke="${t.snake}" stroke-width="3" stroke-linejoin="round"/><rect x="80" y="53" width="28" height="14" rx="7" fill="${t.acc}"/></svg>`;
+ return`<button class="thm" data-t="${k}" aria-label="${tt('th_'+k)}">${svg}<span>${tt('th_'+k)}</span><i class="ck">${ic(IC.check)}</i></button>`}).join('')};
 const syncSet=()=>{[...$('themeRow').children].forEach(b=>b.classList.toggle('on',b.dataset.t===P.theme));[...$('speedSel').children].forEach(b=>b.classList.toggle('on',b.dataset.v===P.speed));[...$('langSel').children].forEach(b=>b.classList.toggle('on',b.dataset.v===P.lang))};
 function applyLang(){const d=document.documentElement;d.lang=P.lang;d.dir=P.lang==='fa'?'rtl':'ltr';document.title=tt('title');
  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=tt(e.dataset.i));document.querySelectorAll('[data-ia]').forEach(e=>{e.title=tt(e.dataset.ia);e.setAttribute('aria-label',tt(e.dataset.ia))});

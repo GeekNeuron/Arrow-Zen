@@ -66,7 +66,7 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
 
 .lvlrow{display:flex;align-items:center;gap:10px;direction:ltr}.gridbtn{width:40px;height:40px;border-radius:12px;padding:0;display:grid;place-items:center;background:var(--card);color:var(--btnfg)}.gridbtn .ic{width:22px;height:22px}
 .sharebox{align-items:stretch}.prev{font-family:inherit;white-space:pre-wrap;word-break:break-word;direction:ltr;text-align:center;font-size:17px;line-height:1.35;margin:2px 0;background:var(--bg);border-radius:12px;padding:10px;overflow:auto}
-.tiers{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.tier{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:2px solid var(--c);color:var(--c)}.lv{border-bottom:4px solid var(--c,transparent)}
+.tiers{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.tier{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--card);color:var(--fg)}.tier i{width:10px;height:10px;border-radius:50%;display:inline-block}.tier.cur{outline:2px solid var(--acc)}.lv{border-bottom:4px solid var(--c,transparent)}
 #winOv{background:color-mix(in srgb,var(--bg) 42%,transparent);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-weight:400}
 .wcard{width:min(320px,88%);margin-top:46px;background:var(--card);border-radius:28px;padding:0 20px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 18px 50px #0007,inset 0 0 0 1px color-mix(in srgb,var(--acc) 28%,transparent);animation:cardIn .55s cubic-bezier(.2,1.25,.3,1) both}
 .wbadge{width:84px;height:84px;margin-top:-42px;border-radius:50%;background:linear-gradient(145deg,#FFE08A,#F2B431);display:grid;place-items:center;box-shadow:0 8px 26px #F2B43177;animation:badge .6s .1s cubic-bezier(.2,1.4,.3,1) both}
@@ -140,6 +140,12 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
  .home .brand{align-self:start;align-items:center;text-align:center}.home .chip{justify-self:center}#playBtn{max-width:none}
  #settings{grid-template-columns:minmax(0,1fr)}#game{grid-template-columns:260px minmax(0,1fr)}#cal{margin-inline:auto}
 }
+
+.thms{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+.thm{position:relative;display:flex;flex-direction:column;gap:6px;padding:6px 6px 9px;border-radius:15px;background:var(--btn);border:2px solid transparent;color:var(--btnfg);font-size:12px;font-weight:700;text-align:center;line-height:1.2;transition:transform .12s,background .2s}
+.thm svg{display:block;width:100%;height:auto;border-radius:10px}.thm.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,var(--btn))}
+.thm .ck{position:absolute;top:11px;inset-inline-end:11px;width:20px;height:20px;border-radius:50%;background:var(--acc);display:none;place-items:center;color:var(--pfg)}.thm.on .ck{display:grid}.thm .ck svg{width:13px;height:13px;border-radius:0;fill:currentColor}
+@media(hover:hover){.thm:hover{transform:translateY(-2px)}}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--heart) 62%,#fff)"/><stop offset="1" style="stop-color:var(--heart)"/></linearGradient>
@@ -162,7 +168,7 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
 <div class="mp"><div class="mb"><div class="mbar"><i id="mFill"></i></div><b id="mDone" class="mc">0</b></div><span id="mTotal" class="mt">31</span></div>
 <div class="note" id="chStats"></div><button id="chPlay" class="pri big"></button><div class="panel" id="chDesc"><div class="note" style="font-size:14px" data-i="ch_desc"></div></div></div>
 <div class="cr"><div class="mhead"><button class="cb" id="mPrev" data-ia="a_prev_month"><i data-ic="back"></i></button><h2 class="hd" id="mTitle"></h2><button class="cb" id="mNext" data-ia="a_next_month"><i data-ic="fwd"></i></button></div>
-<div class="cal" id="cal"></div><div class="panel sharebox"><h3 data-i="ch_share_t"></h3><div class="note" style="font-size:14px" data-i="ch_share_h"></div><pre id="sharePrev" class="prev"></pre><button id="chShare" class="sec" data-i="share_month"></button></div></div></div></section>
+<div class="cal" id="cal"></div><div class="panel sharebox"><pre id="sharePrev" class="prev"></pre><button id="chShare" class="sec" data-i="share_month"></button></div></div></div></section>
 <section id="levels" class="page"><h2 class="hd" data-i="lv_title"></h2><div class="note" id="lvSum"></div><div id="lvTiers" class="tiers"></div><div id="lvGrid" class="lvgrid"></div><div class="note" data-i="lv_hint"></div></section>
 <section id="collection" class="page"><h2 class="hd" data-i="co_title"></h2><div class="seg" id="coTabs" style="width:100%"><button data-v="shapes" data-i="co_shapes"></button><button data-v="ach" data-i="co_ach"></button></div>
 <div id="coShapes" class="pg"><div class="note" id="coCount"></div><div id="grid"></div><div class="note" id="coTroph"></div><div class="panel"><div class="note" style="font-size:14px" data-i="co_desc"></div></div></div>
@@ -176,7 +182,7 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
 <div class="cr"><div class="sl g-s"><span><em style="font-style:normal" data-i="gen_shape"></em><b id="genCells"></b></span><small data-i="gen_shape_h"></small></div><div id="shapes"></div></div></div></section>
 <section id="settings" class="page"><h2 class="hd" data-i="st_title"></h2>
 <div class="row col"><span data-i="st_lang"></span><div class="seg" id="langSel"><button data-v="en">English</button><button data-v="fa">فارسی</button></div></div>
-<div class="row col"><span data-i="st_theme"></span><div class="sws" id="themeRow"></div></div>
+<div class="row col"><span data-i="st_theme"></span><div class="thms" id="themeRow"></div></div>
 <div class="row col"><span data-i="st_speed"></span><div class="seg" id="speedSel"><button data-v="High" data-i="sp_High"></button><button data-v="Medium" data-i="sp_Medium"></button><button data-v="Low" data-i="sp_Low"></button></div></div>
 <label class="row"><span><span data-i="st_fill"></span><small data-i="st_fill_h"></small></span><input type="checkbox" class="tg" id="fillChk"></label>
 <label class="row"><span><span data-i="st_cb"></span><small data-i="st_cb_h"></small></span><input type="checkbox" class="tg" id="cbChk"></label>

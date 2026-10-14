@@ -5,8 +5,15 @@ let rnd=Math.random;
 function setSeed(s){if(s==null){rnd=Math.random;return}let a=s>>>0;rnd=()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const DIRS=[{dx:0,dy:-1,a:270},{dx:0,dy:1,a:90},{dx:-1,dy:0,a:180},{dx:1,dy:0,a:0}];
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-function levelConfig(n,fw,fh){const st=Math.floor(n/10),red=st*3;
- return{w:fw||Math.min(40,Math.max(1,5+Math.floor(n/2)-red)),h:fh||Math.min(40,Math.max(1,5+Math.floor((n-1)/2)-red)),maxLen:Math.min(60,Math.max(4,3+Math.floor(n/2))),lives:Math.max(1,K.LIVES-st)}}
+// ---- difficulty tiers: every level belongs to a sliding window of TWO adjacent tiers, picked pseudo-randomly (but always the same for a given level)
+const DIFF_WIN=[1,16,36,61,91,131,181,251];
+const TIER_CFG=[{s:[5,8],l:[4,7],lives:3},{s:[7,12],l:[6,10],lives:3},{s:[10,16],l:[9,16],lives:2},{s:[14,22],l:[14,24],lives:2},{s:[18,28],l:[20,34],lives:1},{s:[24,34],l:[28,45],lives:1},{s:[30,40],l:[40,60],lives:1},{s:[36,40],l:[50,60],lives:1}];
+function h01(n,salt=0){let a=(Math.imul(n+1,2654435761)^Math.imul(salt+7,40503))>>>0;a=Math.imul(a^(a>>>15),2246822519)>>>0;a=Math.imul(a^(a>>>13),3266489917)>>>0;return((a^(a>>>16))>>>0)/4294967296}
+function levelTier(n){n=Math.max(1,n|0);let k=0;while(k<DIFF_WIN.length-1&&n>=DIFF_WIN[k+1])k++;if(k>=DIFF_WIN.length-1)return DIFF_WIN.length-1;if(n===1)return 0;
+ const prog=(n-DIFF_WIN[k])/(DIFF_WIN[k+1]-DIFF_WIN[k]);return h01(n)<.25+.55*prog?k+1:k}
+function levelConfig(n,fw,fh){const t=levelTier(n),c=TIER_CFG[t],a=DIFF_WIN[Math.max(0,t-1)],b=t>=DIFF_WIN.length-1?a+200:DIFF_WIN[Math.min(DIFF_WIN.length-1,t+1)],f=Math.min(1,Math.max(0,(n-a)/(b-a))),cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+ const sz=cl(Math.round(c.s[0]+(c.s[1]-c.s[0])*f+(h01(n,3)-.5)*2),c.s[0],c.s[1]),dh=h01(n,5)<.35?-1:h01(n,5)>.7?1:0;
+ return{w:fw||Math.min(40,sz),h:fh||Math.min(40,cl(sz+dh,c.s[0]-1,c.s[1])),maxLen:Math.min(60,cl(Math.round(c.l[0]+(c.l[1]-c.l[0])*f+(h01(n,6)-.5)*2),c.l[0],c.l[1])),lives:c.lives,tier:t}}
 function generate(w,h,maxLen,walls,fill,onProg){
  const given=walls||null;walls=walls||Array.from({length:w},()=>new Array(h).fill(false));
  const occ=Array.from({length:w},()=>new Array(h).fill(false)),snakes=[],front=new Map();let ids=0,filled=0,valid=0;
@@ -59,6 +66,6 @@ function grid(l){const g=Array.from({length:l.w},()=>new Array(l.h).fill(0));l.s
 function findRemovable(l){const g=grid(l);const s=l.snakes.find(s=>cleanLoS(l,s,g));return s?s.id:null}
 function isResolvable(l){const g=grid(l),rem=new Set(l.snakes);let guard=l.snakes.length+10;
  while(rem.size&&guard--){const s=[...rem].find(s=>cleanLoS(l,s,g));if(!s)return false;s.body.forEach(p=>g[p.x][p.y]=0);rem.delete(s)}return !rem.size}
-const SHAPES=["anchor","apple","arrow","balloon","bear","bell","bird","bone","bulb","butterfly","cactus","car","carrot","castle","cat","check","cheese","cherry","circle","cloud","cog","cottage","crown","cupcake","diamond","droplet","duck","dumbbell","envelope","eye","fish","flag","flower","gem","ghost","goblet","hammer","heart","hexagon","hourglass","icecream","kite","leaf","moon","mountain","mug","mushroom","note","octagon","owl","padlock","paw","pawn","pine","plane","plus","puzzle","rabbit","ring","rocket","sailboat","shield","skull","smiley","snail","snowflake","sparkle","star5","sun","sword","teapot","tent","triangle","tulip","turtle","umbrella","whale","windmill","wrench","zap"];
+const SHAPES=["anchor","apple","arrow","balloon","bear","bell","bird","bone","bulb","butterfly","cactus","car","carrot","castle","cat","check","cheese","cherry","circle","cloud","cog","cottage","crown","cupcake","diamond","droplet","duck","dumbbell","envelope","eye","fish","flag","flower","gem","ghost","goblet","hammer","heart","hexagon","hourglass","icecream","kite","leaf","moon","mountain","mug","mushroom","note","octagon","owl","padlock","paw","pawn","pine","plane","plus","puzzle","rabbit","ring","rocket","sailboat","shield","skull","smiley","snail","snowflake","sparkle","star5","sun","sword","teapot","tent","triangle","tulip","turtle","umbrella","whale","windmill","wrench","zap","banana","bee","book","bubble","burger","camera","clock","donut","frog","gamepad","ladybug","lighthouse","magnifier","pencil","pin","pizza","planet","pumpkin","strawberry","ufo"];
 function shouldApplyShape(c,r){const s=Math.max(c.w,c.h);const p=s<K.SHAPE_MIN?0:s>=K.SHAPE_ALWAYS?1:K.SHAPE_BASE+(1-K.SHAPE_BASE)*((s-K.SHAPE_MIN)/(K.SHAPE_ALWAYS-K.SHAPE_MIN));return r<p}
-if(typeof module!=='undefined')module.exports={K,setSeed,generate,levelConfig,LineOfSight,isResolvable,findRemovable,shouldApplyShape,SHAPES};
+if(typeof module!=='undefined')module.exports={K,DIFF_WIN,TIER_CFG,levelTier,setSeed,generate,levelConfig,LineOfSight,isResolvable,findRemovable,shouldApplyShape,SHAPES};
