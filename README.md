@@ -2,8 +2,6 @@
 
 An arrow-snake puzzle for the browser, in plain Canvas + JavaScript with no dependencies. English and Persian (RTL), light and dark themes, installable and playable offline.
 
-**License: GPL-3.0.** The game logic and assets derive from [robmat/arrows_game](https://github.com/robmat/arrows_game); keep `LICENSE`. The Vazirmatn font is OFL (`assets/fonts/OFL.txt`).
-
 ## Gameplay
 - Tap a snake whose path in front of its head is clear to slide it out. Tapping a blocked snake costs a life and flashes it solid red for 3 s
 - **3 lives, 3 hints and 3 undos per attempt**. Hints flash a snake you can remove; Undo brings back the last removed snake. Restarting refills them
