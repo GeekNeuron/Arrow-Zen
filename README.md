@@ -1,6 +1,8 @@
 # Arrow Zen
 
-An arrow-snake puzzle for the browser, in plain Canvas + JavaScript with no dependencies. English and Persian (RTL), light and dark themes, installable and playable offline.
+An arrow-snake puzzle for the browser, in plain Canvas + JavaScript with no dependencies. English and Persian (RTL), 22 colour themes (dark and light), installable and playable offline.
+
+**License: GPL-3.0.** The game logic and assets derive from [robmat/arrows_game](https://github.com/robmat/arrows_game); keep `LICENSE`. The Vazirmatn font is OFL (`assets/fonts/OFL.txt`).
 
 ## Gameplay
 - Tap a snake whose path in front of its head is clear to slide it out. Tapping a blocked snake costs a life and flashes it solid red for 3 s
@@ -11,7 +13,7 @@ An arrow-snake puzzle for the browser, in plain Canvas + JavaScript with no depe
 
 ## Modes and meta game
 - **Time attack**: 90 s on the clock, +8 s per cleared board, -5 s per mistake. **Endless**: 3 lives for the whole run (+1 heart every 3 boards), boards keep growing. Best scores are kept; neither writes a save
-- **Challenge**: monthly calendar starting from the month you first opened the game. Every day has its own date-seeded board (identical for everyone). Play today or catch up on earlier days. First clear of a day: +25 XP and streak. Clear the whole month to light the trophy. **Copy / share my month** shows a small emoji calendar (🟩 cleared, 🟦 today, ⬛ missed, ⬜ upcoming) and sends or copies it as plain text; nothing is uploaded
+- **Challenge**: monthly calendar starting from the month you first opened the game. Every day has its own date-seeded board (identical for everyone). Play today or catch up on earlier days. First clear of a day: +25 XP and streak. Clear the whole month to light the trophy.
 - **Streak**, offline **Leagues** (Bronze to Diamond by XP), **Collection** of all 100 shapes and **20 achievements**
 - **Share** a cleared level or challenge day (Web Share API, falls back to the clipboard)
 - **Generator** tab: custom size (20–100 cells, up to 35 with Fill) and shape, with an in-app explanation. Unlocks at level 20; never changes your level or league
