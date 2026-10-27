@@ -1,6 +1,6 @@
 // Arrow Zen service worker: precaches the app shell so the game runs offline.
 // Bump VERSION whenever you ship new files so old caches are dropped.
-const VERSION='arrow-zen-v9';
+const VERSION='arrow-zen-v11';
 const CORE=[
  "./",
  "index.html",
