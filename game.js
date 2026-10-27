@@ -326,8 +326,13 @@ const unlockedMonths=()=>{const a=monthStart(fromKey(P.installed)),b=monthStart(
 // ---- pages
 const PAGES=['home','league','levels','challenge','collection','custom','settings','profile'];let coView='shapes';let curPage='home';
 function hidePages(){PAGES.forEach(x=>$(x).hidden=true);$('nav').hidden=true}
+let bubX=null;
+function moveBub(anim){const nav=$('nav'),on=nav.querySelector('button.on'),bub=$('navBub');if(!on||!nav.offsetWidth){bubX=null;return}
+ const x=on.offsetLeft+on.offsetWidth/2-bub.offsetWidth/2,from=bubX;bubX=x;bub.style.transform=`translateX(${x}px)`;
+ if(anim&&from!=null&&Math.abs(from-x)>1&&!reduced()&&bub.animate){const d=x-from;
+  bub.animate([{transform:`translateX(${from}px) scale(1,1)`},{transform:`translateX(${from+d*.5}px) translateY(-18px) scale(1.12,.9)`,offset:.5},{transform:`translateX(${x}px) scale(1,1)`}],{duration:580,easing:'cubic-bezier(.3,1.2,.55,1)'})}}
 function show(p,keep){if(run)stopRun();curPage=p;if(p==='challenge'&&!keep){chView=monthStart(noon());chSel=dayKey()}$('game').hidden=true;$('shSheet').hidden=true;PAGES.forEach(x=>$(x).hidden=x!==p);$('nav').hidden=false;
- [...$('nav').children].forEach(b=>b.classList.toggle('on',b.dataset.p===(p==='league'||p==='levels'||p==='profile'?'home':p)));theme();chDot();(RENDER[p]||(()=>{}))()}
+ [...$('nav').children].forEach(b=>b.classList.toggle('on',b.dataset.p===(p==='league'||p==='levels'||p==='profile'?'home':p)));requestAnimationFrame(()=>moveBub(true));theme();chDot();(RENDER[p]||(()=>{}))()}
 let glF='all',glSel=null;const AVATARS=['🦉','🐱','🦊','🐼','🐸','🐯','🦄','🐙','🐳','🦋','🚀','👾'];
 const playable=n=>!!P.shapes[n]||SHAPE_ORDER.indexOf(n)<SHAPES.filter(x=>P.shapes[x]).length+4;
 function openSheet(n){glSel=n;const got=!!P.shapes[n],pl=playable(n),i=SHAPE_ORDER.indexOf(n),d=Math.min(P.sm[n]||0,SM_BOARDS);
@@ -439,6 +444,6 @@ addEventListener('resize',resize);addEventListener('keydown',e=>{if(e.key==='Tab
  else if(k.startsWith('arrow')){e.preventDefault();kbdMove(k==='arrowleft'||k==='arrowup'?-1:1)}
  else if((k==='enter'||k===' ')&&kbdMode&&kSel!=null&&(!document.activeElement||document.activeElement===document.body)){e.preventDefault();const s=lvl.snakes.find(q=>q.id===kSel);if(s&&!loading&&lives>0&&!entering&&!won)activate(s,new LineOfSight(lvl,new Set(removal.keys())).blocked(s))}});
 addEventListener('pointerdown',()=>{document.documentElement.classList.remove('kbd');kbdMode=false},true);
-theme();applyLang();show('home');remCheck();resize();requestAnimationFrame(draw);
+theme();applyLang();show('home');remCheck();addEventListener('resize',()=>moveBub(false));if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>moveBub(false));resize();requestAnimationFrame(draw);
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 })();

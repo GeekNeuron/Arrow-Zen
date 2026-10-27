@@ -20,12 +20,16 @@ svg{display:block}.ic{width:24px;height:24px;fill:currentColor}
 .brand{display:flex;flex-direction:column;align-items:center;gap:4px}.brand h1{margin:0;font-size:38px;letter-spacing:1px;font-weight:800;color:var(--title)}.lvl{font-size:26px;font-weight:800;color:var(--acc)}#homeDiff{font-size:20px;font-weight:800}
 #nav{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(calc(100% - 24px),460px);display:flex;align-items:center;justify-content:space-between;gap:2px;padding:8px;background:color-mix(in srgb,var(--card) 86%,transparent);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-radius:30px;box-shadow:0 14px 34px -10px #000a,inset 0 0 0 1px color-mix(in srgb,var(--fg) 12%,transparent);z-index:4}
 #nav button{position:relative;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;padding:7px 2px;border-radius:20px;color:var(--btnfg);flex:1;min-width:0;white-space:nowrap}
-#nav button.on{background:var(--btn)}
-#nav button[data-p=home]{flex:none;width:62px;height:62px;margin-top:-32px;border-radius:50%;background:var(--acc);color:var(--pfg);justify-content:center;padding:0;border:5px solid var(--bg);box-shadow:0 12px 22px -6px color-mix(in srgb,var(--acc) 70%,transparent);transition:transform .18s}
-#nav button[data-p=home] span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-#nav button[data-p=home] .ic{width:28px;height:28px}
-#nav button[data-p=home].on{transform:translateY(-3px) scale(1.07)}
-#nav .dot{position:absolute;top:3px;inset-inline-end:calc(50% - 22px);width:10px;height:10px;border-radius:50%;background:#FF4B5E}
+#nav{--bs:58px;--bt:-24px;--lift:-23px}
+#nav button{z-index:1;-webkit-tap-highlight-color:transparent;transition:color .25s}
+#nav button .ic{width:24px;height:24px;transition:transform .5s cubic-bezier(.34,1.56,.64,1) .05s,color .2s}
+#nav button.on{color:var(--fg)}
+#nav button.on .ic{transform:translateY(var(--lift)) scale(1.08);color:var(--pfg)}
+#nav button span{transition:opacity .2s,transform .3s}
+#nav button.on span{opacity:0;transform:translateY(8px)}
+#nav button.on .dot{opacity:0}
+#navBub{position:absolute;left:0;top:var(--bt);width:var(--bs);height:var(--bs);border-radius:50%;background:var(--acc);border:5px solid var(--bg);box-shadow:0 12px 22px -6px color-mix(in srgb,var(--acc) 70%,transparent);pointer-events:none;z-index:0;will-change:transform}
+#nav .dot{z-index:2;position:absolute;top:3px;inset-inline-end:calc(50% - 22px);width:10px;height:10px;border-radius:50%;background:#FF4B5E}
 .row{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--card);border-radius:16px;padding:14px 16px;gap:12px;text-align:start}.row.col{flex-direction:column;align-items:stretch}.row small{display:block;font-size:12px;opacity:.85;margin-top:2px}
 .sws{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.sw{width:44px;height:44px;border-radius:50%;padding:0;background:linear-gradient(135deg,var(--a) 50%,var(--b) 50%);border:3px solid transparent}.sw.on{border-color:var(--acc)}
 .seg{display:flex;gap:6px}.seg button{flex:1;padding:8px}.seg button.on{background:var(--acc);color:var(--pfg);font-weight:700}
@@ -96,9 +100,8 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
  #nav{width:min(580px,calc(100% - 48px));bottom:24px;padding:10px 14px;border-radius:34px}
  #nav button{font-size:13px;padding:9px 4px;min-width:84px}
  #nav button:hover:not(.on){background:color-mix(in srgb,var(--btn) 45%,transparent);filter:none}
- #nav button[data-p=home]{width:76px;height:76px;margin-top:-38px;min-width:0}
- #nav button[data-p=home] .ic{width:32px;height:32px}
- #nav button[data-p=home]:hover{filter:brightness(1.1);transform:translateY(-3px)}
+ #nav{--bs:66px;--bt:-28px;--lift:-27px}
+ #nav button .ic{width:26px;height:26px}
  .toast{bottom:120px}
  /* pages */
  .page{align-items:stretch;text-align:start;padding:38px max(48px,calc((100% - 1120px)/2)) 150px;gap:22px}
@@ -172,6 +175,7 @@ html.hc #app{background:var(--bg)}
 .card,.panel,.glhead,.prh{border-radius:24px}.pill2{border-radius:20px}
 #playBtn{box-shadow:0 14px 30px -10px color-mix(in srgb,var(--acc) 75%,transparent)}
 .hd{letter-spacing:.2px}
+@media(prefers-reduced-motion:reduce){#nav button .ic{transition:none}}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--heart) 62%,#fff)"/><stop offset="1" style="stop-color:var(--heart)"/></linearGradient>
@@ -219,7 +223,7 @@ html.hc #app{background:var(--bg)}
 <div class="row" id="instRow" hidden><span data-i="st_install"></span><button id="instBtn" class="pri" style="padding:8px 22px;font-size:15px" data-i="install"></button></div>
 <div class="note" data-i="st_keys"></div>
 </section>
-<nav id="nav"><button data-p="challenge"><i data-ic="cal"></i><span data-i="nav_challenge"></span><b class="dot" id="chDot"></b></button>
+<nav id="nav"><i id="navBub"></i><button data-p="challenge"><i data-ic="cal"></i><span data-i="nav_challenge"></span><b class="dot" id="chDot"></b></button>
 <button data-p="collection"><i data-ic="images"></i><span data-i="nav_collection"></span></button><button data-p="home"><i data-ic="home"></i><span data-i="nav_home"></span></button><button data-p="custom"><i data-ic="gen"></i><span data-i="nav_generator"></span></button><button data-p="settings"><i data-ic="gear"></i><span data-i="nav_settings"></span></button></nav>
 <section id="game" hidden><div id="bar"><div class="l"><button class="cb" id="backBtn" data-ia="a_back"><i data-ic="back"></i><kbd class="kb">Esc</kbd></button><button class="cb" id="restartBtn" data-ia="a_restart"><i data-ic="restart"></i><kbd class="kb">R</kbd></button><button class="cb" id="regenBtn" data-ia="a_new"><i data-ic="shuffle"></i></button></div>
 <div id="mid"><div id="diff"></div><div id="lives"></div></div><button id="hintBtn"><i data-ic="bulb"></i><span data-i="hint"></span><em id="hintCnt" class="bdg2"></em><kbd class="kb">H</kbd></button></div>
