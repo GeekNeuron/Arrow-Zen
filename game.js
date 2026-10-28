@@ -98,13 +98,13 @@ function dailyCfg(day){const seed=parseInt(day.replace(/-/g,''),10);setSeed(seed
 const campaignSeed=n=>1000003*n+17;
 async function newLevel(c){custom=c||null;clearSave();hidePages();$('game').hidden=false;$('winOv').hidden=$('overOv').hidden=true;$('overSub').hidden=true;resize();
  loading=true;lvl=null;setProg(0);$('loadOv').hidden=false;
- let cfg,shape=null,seed=null,fill=P.fill;
+ let cfg,shape=null,seed=null,fill=P.fill,vv=0;
  if(custom&&custom.daily){const d=dailyCfg(custom.day);cfg={w:d.w,h:d.h,maxLen:d.maxLen,lives:K.LIVES};shape=d.shape;seed=d.seed;fill=false}
- else if(custom&&custom.sm){const rg=[[18,22],[24,30],[30,36]][custom.tier],ri=()=>rg[0]+(Math.random()*(rg[1]-rg[0]+1)|0);cfg=levelConfig([6,45,100][custom.tier]);cfg.w=ri();cfg.h=ri();cfg.lives=3;shape=custom.shape;fill=false}
+ else if(custom&&custom.sm){const T=[{s:[9,12],l:[10,14]},{s:[15,19],l:[8,12]},{s:[24,29],l:[7,11]}][custom.tier],ri=r=>r[0]+(Math.random()*(r[1]-r[0]+1)|0);cfg={w:ri(T.s),h:ri(T.s),maxLen:ri(T.l),lives:3};shape=custom.shape;fill=false}
  else if(custom&&custom.mode){cfg=levelConfig(custom.lv);cfg.lives=3;fill=false}
  else if(custom&&custom.w){cfg=levelConfig(P.level,custom.w,custom.h);shape=custom.shape;if(fill){cfg.w=Math.min(cfg.w,K.MAXFILL);cfg.h=Math.min(cfg.h,K.MAXFILL)}}
- else{const n=custom&&custom.replay?custom.replay:P.level;cfg=levelConfig(n);seed=campaignSeed(n);setSeed(seed);shape=shouldApplyShape(cfg,rnd())?SHAPES[rnd()*SHAPES.length|0]:null;setSeed(null);if(fill){cfg.w=Math.min(cfg.w,K.MAXFILL);cfg.h=Math.min(cfg.h,K.MAXFILL)}}
- curShape=shape;let walls=null;if(shape){const im=await loadShape(shape);if(im)walls=wallsFromImage(im,cfg.w,cfg.h)}
+ else{const n=custom&&custom.replay?custom.replay:P.level;cfg=levelConfig(n);seed=campaignSeed(n);setSeed(seed);shape=shouldApplyShape(cfg,rnd())?SHAPES[(Math.imul(n,37)>>>0)%SHAPES.length]:null;vv=Math.floor(n/SHAPES.length)%8;setSeed(null);if(fill){cfg.w=Math.min(cfg.w,K.MAXFILL);cfg.h=Math.min(cfg.h,K.MAXFILL)}}
+ curShape=shape;let walls=null;if(shape){const im=await loadShape(shape);if(im){walls=wallsFromImage(im,cfg.w,cfg.h);if(vv){let a=walls;if(vv&4){a=a[0].map((_,y)=>a.map(c=>c[y]));[cfg.w,cfg.h]=[cfg.h,cfg.w]}if(vv&1)a=a.slice().reverse();if(vv&2)a=a.map(c=>c.slice().reverse());walls=a}}}
  runGen(cfg,walls,fill,seed,l=>setLevel(l,cfg.lives,null,custom&&custom.mode==='endless'&&run?run.lives:null))}
 function play(){const s=readSave();if(!s)return newLevel();custom=s.custom;curShape=s.shape||null;hidePages();$('game').hidden=false;$('winOv').hidden=$('overOv').hidden=true;$('overSub').hidden=true;resize();
  setLevel(s.initial,s.maxLives,s.cur,s.lives,{hints:s.hints,undos:s.undos,stack:s.stack});if(lives<=0)over()}
@@ -324,7 +324,7 @@ function onWin(){const before=tierOf(P.xp||0),lost=maxLives-lives,stars=lost<=0?
 const chDot=()=>{$('chDot').hidden=!!P.daily[dayKey()]};
 const unlockedMonths=()=>{const a=monthStart(fromKey(P.installed)),b=monthStart(noon());return[a,b]};
 // ---- pages
-const PAGES=['home','league','levels','challenge','collection','custom','settings','profile'];let coView='shapes';let curPage='home';
+const PAGES=['home','league','levels','challenge','collection','custom','settings'];let coView='shapes';let curPage='home';
 function hidePages(){PAGES.forEach(x=>$(x).hidden=true);$('nav').hidden=true}
 let bubX=null;
 function moveBub(anim){const nav=$('nav'),on=nav.querySelector('button.on'),bub=$('navBub');if(!on||!nav.offsetWidth){bubX=null;return}
@@ -332,16 +332,17 @@ function moveBub(anim){const nav=$('nav'),on=nav.querySelector('button.on'),bub=
  if(anim&&from!=null&&Math.abs(from-x)>1&&!reduced()&&bub.animate){const d=x-from;
   bub.animate([{transform:`translateX(${from}px) scale(1,1)`},{transform:`translateX(${from+d*.5}px) translateY(-18px) scale(1.12,.9)`,offset:.5},{transform:`translateX(${x}px) scale(1,1)`}],{duration:580,easing:'cubic-bezier(.3,1.2,.55,1)'})}}
 function show(p,keep){if(run)stopRun();curPage=p;if(p==='challenge'&&!keep){chView=monthStart(noon());chSel=dayKey()}$('game').hidden=true;$('shSheet').hidden=true;PAGES.forEach(x=>$(x).hidden=x!==p);$('nav').hidden=false;
- [...$('nav').children].forEach(b=>b.classList.toggle('on',b.dataset.p===(p==='league'||p==='levels'||p==='profile'?'home':p)));requestAnimationFrame(()=>moveBub(true));theme();chDot();(RENDER[p]||(()=>{}))()}
+ [...$('nav').children].forEach(b=>b.classList.toggle('on',b.dataset.p===(p==='league'||p==='levels'?'home':p)));requestAnimationFrame(()=>moveBub(true));theme();chDot();(RENDER[p]||(()=>{}))()}
 let glF='all',glSel=null;const AVATARS=['🦉','🐱','🦊','🐼','🐸','🐯','🦄','🐙','🐳','🦋','🚀','👾'];
 const playable=n=>!!P.shapes[n]||SHAPE_ORDER.indexOf(n)<SHAPES.filter(x=>P.shapes[x]).length+4;
-function openSheet(n){glSel=n;const got=!!P.shapes[n],pl=playable(n),i=SHAPE_ORDER.indexOf(n),d=Math.min(P.sm[n]||0,SM_BOARDS);
+let shTier=0;
+function openSheet(n){glSel=n;shTier=(P.smd&&P.smd[n]!=null)?P.smd[n]:smTier(n);const got=!!P.shapes[n],pl=playable(n),i=SHAPE_ORDER.indexOf(n),d=Math.min(P.sm[n]||0,SM_BOARDS);
  $('shImg').innerHTML=got||pl?`<img src="assets/shapes/${n}.png" alt="">`:ic(IC.lock);$('shImg').classList.toggle('dim',!got&&!pl);
  $('shName').textContent=got?shapeName(n):'???';$('shMeta').textContent='#'+nf(i+1)+' · '+tt('sh_'+TIERK[smTier(n)]);$('shBar').style.width=(d/SM_BOARDS*100)+'%';$('shBarT').textContent=tt('gl_boards',{a:nf(d),b:nf(SM_BOARDS)});$('shBarW').hidden=!got&&!pl;
- $('shMsg').textContent=got?tt('gl_done'):pl?tt('gl_unlock',{n:nf(SM_BOARDS)}):tt('gl_locked');$('shPlay').hidden=!(got||pl);$('shPlay').textContent=got?tt('gl_again'):(d?tt('cont'):tt('gl_play'));$('shSheet').hidden=false}
-function startShape(n,fresh){const sv=readSave();if(sv&&sv.custom&&sv.custom.sm&&sv.custom.shape===n&&!fresh)return play();if(sv&&!confirm(tt('confirm_discard')))return;const d=P.sm[n]||0;newLevel({sm:true,shape:n,idx:(fresh||d>=SM_BOARDS)?0:d,tier:smTier(n)})}
+ $('shMsg').textContent=got?tt('gl_done'):pl?tt('gl_unlock',{n:nf(SM_BOARDS)}):tt('gl_locked');$('shPlay').hidden=!(got||pl);$('shPlay').textContent=got?tt('gl_again'):(d?tt('cont'):tt('gl_play'));$('shDiffT').textContent=tt('sh_'+TIERK[shTier]+'_d');$('shDiff').hidden=$('shDiffT').hidden=!(got||pl);$('shDiff').innerHTML=[0,1,2].map(k=>`<button data-t="${k}"${k===shTier?' class="on"':''}>${tt('sh_'+TIERK[k])}</button>`).join('');$('shSheet').hidden=false}
+function startShape(n,fresh,tier){const sv=readSave();if(sv&&sv.custom&&sv.custom.sm&&sv.custom.shape===n&&!fresh)return play();if(sv&&!confirm(tt('confirm_discard')))return;const d=P.sm[n]||0;newLevel({sm:true,shape:n,idx:(fresh||d>=SM_BOARDS)?0:d,tier:tier==null?smTier(n):tier})}
 const RENDER={
- home(){const s=streakNow(),tr=tierOf(P.xp||0),done=!!P.daily[dayKey()],d=levelDiff(P.level);$('streakN').textContent=nf(s);$('starN').textContent=nf(Object.values(P.stars).reduce((a,b)=>a+b,0));$('achN').textContent=nf(ACH.filter(a=>P.ach[a[0]]).length)+'/'+nf(ACH.length);$('shBest').textContent=tt('mode_shapes_s',{a:nf(SHAPES.filter(n=>P.shapes[n]).length),b:nf(SHAPES.length)});$('streakChip').classList.toggle('on',s>0);
+ home(){const s=streakNow(),tr=tierOf(P.xp||0),done=!!P.daily[dayKey()],d=levelDiff(P.level);$('streakN').textContent=nf(s);$('starN').textContent=nf(Object.values(P.stars).reduce((a,b)=>a+b,0));$('achN').textContent=nf(ACH.filter(a=>P.ach[a[0]]).length)+'/'+nf(ACH.length);$('streakChip').classList.toggle('on',s>0);
   $('lvTxt').textContent=nf(P.level);$('homeDiff').textContent=tt('diff_'+d.k);$('homeDiff').style.color=dcol(d.c);$('playBtn').textContent=readSave()?tt('cont'):tt('play');
   $('leagueIc').innerHTML=shield(tr.id);$('leagueName').textContent=tt('tier_'+tr.id);
   $('chDate').textContent=new Date().toLocaleDateString(calLoc(),{month:'long',day:'numeric'});$('chIc').innerHTML=cup(done);$('chBtn').textContent=done?tt('done'):tt('play');$('chCard').classList.toggle('done',done);$('taBest').textContent=tt('mode_best',{n:nf(P.stats.taBest)});$('endBest').textContent=tt('mode_best',{n:nf(P.stats.endBest)})},
@@ -377,14 +378,12 @@ const RENDER={
   $('coTroph').textContent=tt('co_trophies',{n:nf(Object.keys(P.daily).length)});
   $('achCount').textContent=tt('ach_count',{a:nf(ACH.filter(a=>P.ach[a[0]]).length),b:nf(ACH.length)});
   $('achList').innerHTML=ACH.map(([id])=>{const on=!!P.ach[id];return`<div class="row${on?'':' lk'}">${cup(on)}<b style="text-align:start"><span>${tt('ach_'+id)}</span><small>${tt('acd_'+id)}</small></b></div>`}).join('')},
- profile(){const S=P.stats,tr=tierOf(P.xp||0),stars=Object.values(P.stars).reduce((a,b)=>a+b,0),T=(e,n,l)=>`<div class="stt"><i>${e}</i><div><b>${n}</b><span>${l}</span></div></div>`,sec=(t,items)=>`<h3 class="sech">${tt(t)}</h3><div class="panel"><div class="sg">${items.join('')}</div></div>`;
-  $('prAv').textContent=AVATARS[P.avatar%AVATARS.length];$('prName').textContent=P.name;$('prLv').textContent=nf(P.level);$('prSt').textContent=nf(stars);$('prXp').textContent=nf(P.xp||0);$('prLeague').innerHTML=shield(tr.id)+'<b>'+tt('tier_'+tr.id)+'</b>';
-  $('prBody').innerHTML=sec('pr_journey',[T('✅',nf(Math.max(0,P.level-1)),tt('s_levels')),T('⭐',nf(Object.values(P.stars).filter(v=>v>=3).length),tt('s_3star')),T('➤',nf(S.arrows||0),tt('s_arrows')),T('🗓',nf(Object.keys(P.daily).length),tt('s_dailies')),T('🖼',nf(SHAPES.filter(n=>P.shapes[n]).length)+'/'+nf(SHAPES.length),tt('s_shapes')),T('🏆',nf(P.xp||0),tt('s_xp'))])
-   +sec('pr_skill',[T('❤',nf(S.flawless||0),tt('s_flawless')),T('⚡','x'+nf(S.bestCombo||0),tt('s_combo')),T('🎯',nf(S.pure||0),tt('s_pure')),T('😅',nf(S.close||0),tt('s_close')),T('📐',nf(S.big||0),tt('s_big')),T('🧩',nf(S.cleared||0),tt('s_boards'))])
-   +sec('pr_items',[T('💡',nf(P.items.hints),tt('s_hints')),T('❤',nf(P.items.refills),tt('s_refills'))])
-   +sec('pr_streaks',[T('🔥',nf(streakNow()),tt('s_daystreak',{b:nf(S.bestStreak||0)})),T('🗓',nf(dstreakNow()),tt('s_dstreak',{b:nf(P.dstreak.best||0)}))])},
+ _profile(){const S=P.stats,stars=Object.values(P.stars).reduce((a,b)=>a+b,0),T=(e,n,l)=>`<div class="stt"><i>${e}</i><div><b>${n}</b><span>${l}</span></div></div>`;
+  $('prAv').textContent=AVATARS[P.avatar%AVATARS.length];$('prName').textContent=P.name;$('prLv').textContent=nf(P.level);$('prSt').textContent=nf(stars);$('prXp').textContent=nf(P.xp||0);
+  $('prBody').innerHTML=[T('✅',nf(Math.max(0,P.level-1)),tt('s_levels')),T('⭐',nf(Object.values(P.stars).filter(v=>v>=3).length),tt('s_3star')),T('➤',nf(S.arrows||0),tt('s_arrows')),T('🗓',nf(Object.keys(P.daily).length),tt('s_dailies')),T('🖼',nf(SHAPES.filter(n=>P.shapes[n]).length)+'/'+nf(SHAPES.length),tt('s_shapes')),T('❤',nf(S.flawless||0),tt('s_flawless')),T('⚡','x'+nf(S.bestCombo||0),tt('s_combo')),T('🔥',nf(streakNow()),tt('s_daystreak',{b:nf(S.bestStreak||0)})),T('💡',nf(P.items.hints),tt('s_hints'))].join('')},
  custom(){const lk=P.level<K.GEN_UNLOCK;$('lockNote').hidden=!lk;$('genBtn').disabled=lk;syncSliders()},
- settings(){syncSet()}};
+ settings(){syncSet();renderProfile()}};
+function renderProfile(){RENDER._profile();const tr=tierOf(P.xp||0),stars=Object.values(P.stars).reduce((a,b)=>a+b,0);$('prMeta').textContent=tt('tier_'+tr.id)+' · ⭐ '+nf(stars)}
 // ---- settings
 const renderTheme=()=>{$('themeRow').innerHTML=Object.keys(THEMES).map(k=>{const t=THEMES[k],dot=t.dot||mixc(t.bg,t.snake,.18);
  const dots=[0,1,2].map(r=>[0,1,2,3,4].map(c=>`<circle cx="${12+c*17}" cy="${14+r*16}" r="2.6" fill="${dot}"/>`).join('')).join('');
@@ -427,9 +426,10 @@ $('mPrev').onclick=()=>moveMonth(-1);$('mNext').onclick=()=>moveMonth(1);$('leag
 $('playBtn').onclick=play;$('backBtn').onclick=()=>show(custom&&custom.sm?'collection':'home');$('restartBtn').onclick=restart;$('regenBtn').onclick=()=>newLevel(custom);$('hintBtn').onclick=hint;$('refillBtn').onclick=()=>{if(P.items.refills<=0||lives>0||run||!lvl)return;P.items.refills--;lives=maxLives;prevLives=null;save();$('overOv').hidden=true;hud();persist()};$('undoBtn').onclick=undo;$('retryBtn').onclick=()=>run?startRun(run.type):restart();
 $('lvlBtn').onclick=()=>show('levels');$('taBtn').onclick=()=>startRun('ta');$('endBtn').onclick=()=>startRun('endless');
 $('grid').onclick=e=>{const b=e.target.closest('button.gt');if(b)openSheet(b.dataset.s)};$('glFilter').onclick=e=>{const b=e.target.closest('button');if(!b)return;glF=b.dataset.f;RENDER.collection()};
-$('glNext').onclick=()=>{const nx=SHAPE_ORDER.find(n=>!P.shapes[n]);if(nx)startShape(nx)};$('shClose').onclick=()=>$('shSheet').hidden=true;$('shSheet').onclick=e=>{if(e.target===$('shSheet'))$('shSheet').hidden=true};$('shPlay').onclick=()=>{const n=glSel;$('shSheet').hidden=true;startShape(n,!!P.shapes[n])};
-$('shBtn').onclick=()=>{coView='shapes';show('collection')};$('profBtn').onclick=()=>show('profile');$('prLeague').onclick=()=>show('league');
-$('prAvBtn').onclick=()=>{P.avatar=(P.avatar+1)%AVATARS.length;save();RENDER.profile()};$('prEdit').onclick=()=>{const v=prompt(tt('pr_name_q'),P.name);if(v&&v.trim()){P.name=v.trim().slice(0,18);save();RENDER.profile()}};
+$('glNext').onclick=()=>{const nx=SHAPE_ORDER.find(n=>!P.shapes[n]);if(nx)startShape(nx)};$('shClose').onclick=()=>$('shSheet').hidden=true;$('shSheet').onclick=e=>{if(e.target===$('shSheet'))$('shSheet').hidden=true};$('shPlay').onclick=()=>{const n=glSel;$('shSheet').hidden=true;P.smd=P.smd||{};P.smd[n]=shTier;save();startShape(n,!!P.shapes[n],shTier)};
+$('shDiff').onclick=e=>{const b=e.target.closest('button');if(!b)return;shTier=+b.dataset.t;$('shDiffT').textContent=tt('sh_'+TIERK[shTier]+'_d');[...$('shDiff').children].forEach(x=>x.classList.toggle('on',+x.dataset.t===shTier))};
+
+$('prAvBtn').onclick=()=>{P.avatar=(P.avatar+1)%AVATARS.length;save();renderProfile()};$('prEdit').onclick=()=>{const v=prompt(tt('pr_name_q'),P.name);if(v&&v.trim()){P.name=v.trim().slice(0,18);save();renderProfile()}};
 $('coTabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;coView=b.dataset.v;RENDER.collection()};
 $('shareBtn').onclick=()=>shareOut(shareText());
 $('lvGrid').onclick=e=>{const b=e.target.closest('button.lv');if(!b||b.disabled)return;const n=+b.dataset.n,sv=readSave();

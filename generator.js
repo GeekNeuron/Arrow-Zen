@@ -13,6 +13,7 @@ function levelTier(n){n=Math.max(1,n|0);let k=0;while(k<DIFF_WIN.length-1&&n>=DI
  const prog=(n-DIFF_WIN[k])/(DIFF_WIN[k+1]-DIFF_WIN[k]);return h01(n)<.25+.55*prog?k+1:k}
 function levelConfig(n,fw,fh){const t=levelTier(n),c=TIER_CFG[t],a=DIFF_WIN[Math.max(0,t-1)],b=t>=DIFF_WIN.length-1?a+200:DIFF_WIN[Math.min(DIFF_WIN.length-1,t+1)],f=Math.min(1,Math.max(0,(n-a)/(b-a))),cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
  const sz=cl(Math.round(c.s[0]+(c.s[1]-c.s[0])*f+(h01(n,3)-.5)*2),c.s[0],c.s[1]),dh=h01(n,5)<.35?-1:h01(n,5)>.7?1:0;
+ if(t>=DIFF_WIN.length-1){const s2=30+Math.floor(h01(n,3)*11);return{w:fw||Math.min(40,s2),h:fh||Math.min(40,Math.max(28,s2+Math.round((h01(n,5)-.5)*8))),maxLen:Math.min(60,34+Math.floor(h01(n,6)*27)),lives:c.lives,tier:t}}
  return{w:fw||Math.min(40,sz),h:fh||Math.min(40,cl(sz+dh,c.s[0]-1,c.s[1])),maxLen:Math.min(60,cl(Math.round(c.l[0]+(c.l[1]-c.l[0])*f+(h01(n,6)-.5)*2),c.l[0],c.l[1])),lives:c.lives,tier:t}}
 function generate(w,h,maxLen,walls,fill,onProg){
  const given=walls||null;walls=walls||Array.from({length:w},()=>new Array(h).fill(false));
