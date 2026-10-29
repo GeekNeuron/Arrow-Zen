@@ -7,14 +7,15 @@ const DIRS=[{dx:0,dy:-1,a:270},{dx:0,dy:1,a:90},{dx:-1,dy:0,a:180},{dx:1,dy:0,a:
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 // ---- difficulty tiers: every level belongs to a sliding window of TWO adjacent tiers, picked pseudo-randomly (but always the same for a given level)
 const DIFF_WIN=[1,16,36,61,91,131,181,251];
-const TIER_CFG=[{s:[5,8],l:[4,7],lives:3},{s:[7,12],l:[6,10],lives:3},{s:[10,16],l:[9,16],lives:2},{s:[14,22],l:[14,24],lives:2},{s:[18,28],l:[20,34],lives:1},{s:[24,34],l:[28,45],lives:1},{s:[30,40],l:[40,60],lives:1},{s:[36,40],l:[50,60],lives:1}];
+const TIER_CFG=[{s:[6,9],n:[4,9],lives:3},{s:[8,12],n:[10,20],lives:3},{s:[12,16],n:[20,40],lives:2},{s:[16,22],n:[40,75],lives:2},{s:[22,28],n:[75,120],lives:1},{s:[26,34],n:[120,180],lives:1},{s:[32,38],n:[170,235],lives:1},{s:[36,40],n:[290,440],lives:1}]; // s = board size range, n = target arrow count range
 function h01(n,salt=0){let a=(Math.imul(n+1,2654435761)^Math.imul(salt+7,40503))>>>0;a=Math.imul(a^(a>>>15),2246822519)>>>0;a=Math.imul(a^(a>>>13),3266489917)>>>0;return((a^(a>>>16))>>>0)/4294967296}
 function levelTier(n){n=Math.max(1,n|0);let k=0;while(k<DIFF_WIN.length-1&&n>=DIFF_WIN[k+1])k++;if(k>=DIFF_WIN.length-1)return DIFF_WIN.length-1;if(n===1)return 0;
  const prog=(n-DIFF_WIN[k])/(DIFF_WIN[k+1]-DIFF_WIN[k]);return h01(n)<.25+.55*prog?k+1:k}
-function levelConfig(n,fw,fh){const t=levelTier(n),c=TIER_CFG[t],a=DIFF_WIN[Math.max(0,t-1)],b=t>=DIFF_WIN.length-1?a+200:DIFF_WIN[Math.min(DIFF_WIN.length-1,t+1)],f=Math.min(1,Math.max(0,(n-a)/(b-a))),cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
- const sz=cl(Math.round(c.s[0]+(c.s[1]-c.s[0])*f+(h01(n,3)-.5)*2),c.s[0],c.s[1]),dh=h01(n,5)<.35?-1:h01(n,5)>.7?1:0;
- if(t>=DIFF_WIN.length-1){const s2=30+Math.floor(h01(n,3)*11);return{w:fw||Math.min(40,s2),h:fh||Math.min(40,Math.max(28,s2+Math.round((h01(n,5)-.5)*8))),maxLen:Math.min(60,34+Math.floor(h01(n,6)*27)),lives:c.lives,tier:t}}
- return{w:fw||Math.min(40,sz),h:fh||Math.min(40,cl(sz+dh,c.s[0]-1,c.s[1])),maxLen:Math.min(60,cl(Math.round(c.l[0]+(c.l[1]-c.l[0])*f+(h01(n,6)-.5)*2),c.l[0],c.l[1])),lives:c.lives,tier:t}}
+function levelConfig(n,fw,fh){const t=levelTier(n),c=TIER_CFG[t],last=t>=DIFF_WIN.length-1,cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+ const a=DIFF_WIN[Math.max(0,t-1)],b=DIFF_WIN[Math.min(DIFF_WIN.length-1,t+1)],f=last?cl((n-DIFF_WIN[t])/1000,0,1):cl((n-a)/(b-a),0,1);
+ const sz=cl(Math.round(c.s[0]+(c.s[1]-c.s[0])*f+(h01(n,3)-.5)*2),c.s[0],c.s[1]),dh=h01(n,5)<.35?-1:h01(n,5)>.7?1:0,w=fw||Math.min(40,sz),h=fh||Math.min(40,cl(sz+dh,c.s[0]-1,c.s[1]));
+ const target=(c.n[0]+(c.n[1]-c.n[0])*f)*(.88+.24*h01(n,6));
+ return{w,h,maxLen:cl(Math.round((1.04-.0125*Math.max(0,(w+h)/2-22))*w*h/target),3,60),lives:c.lives,tier:t}}
 function generate(w,h,maxLen,walls,fill,onProg){
  const given=walls||null;walls=walls||Array.from({length:w},()=>new Array(h).fill(false));
  const occ=Array.from({length:w},()=>new Array(h).fill(false)),snakes=[],front=new Map();let ids=0,filled=0,valid=0;

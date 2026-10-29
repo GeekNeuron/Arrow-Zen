@@ -37,7 +37,7 @@ input.tg{appearance:none;-webkit-appearance:none;width:48px;height:28px;border-r
 input.tg:after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:var(--btnfg);transition:.2s}input.tg:checked{background:var(--acc)}input.tg:checked:after{inset-inline-start:23px;background:#fff}
 .panel{width:100%;background:var(--card);border-radius:18px;padding:16px;text-align:start;display:flex;flex-direction:column;gap:8px}.panel h3{margin:0;font-size:16px}.panel ul{margin:0;padding-inline-start:20px;font-size:13.5px;line-height:1.8;opacity:.9}
 .sl{width:100%;display:flex;flex-direction:column;gap:2px;text-align:start}.sl span{display:flex;justify-content:space-between;font-weight:700}.sl small{opacity:.85;font-size:12px}input[type=range]{width:100%;accent-color:var(--acc)}
-#shapes{display:grid;grid-template-columns:repeat(5,52px);gap:8px;justify-content:center;max-height:340px;overflow:auto}#shapes button{width:52px;height:52px;padding:6px;font-size:22px;border:2px solid transparent}#shapes button.on{border-color:var(--acc)}#shapes img{width:100%;height:100%;filter:var(--shapeinv,invert(1))}
+#shapes{display:grid;grid-template-columns:repeat(5,52px);gap:8px;justify-content:center;max-height:48vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--card) 55%,transparent)}#shapes button{width:52px;height:52px;padding:6px;font-size:22px;border:2px solid transparent}#shapes button.on{border-color:var(--acc)}#shapes img{width:100%;height:100%;filter:var(--shapeinv,invert(1))}
 .big2{font-size:42px;font-weight:800;color:var(--title);line-height:1}.pbar{width:100%;height:10px;border-radius:5px;background:var(--btn);overflow:hidden}.pbar i{display:block;height:100%;background:var(--acc);border-radius:5px}
 .ladder{width:100%;display:flex;flex-direction:column;gap:8px}.ladder .row{padding:10px 14px}.ladder .row.cur{outline:2px solid var(--acc)}.ladder .row.lk svg{filter:grayscale(1);opacity:.35}.ladder svg{width:34px;height:34px}.ladder .row b{flex:1}
 .wk{display:flex;gap:6px;justify-content:center;width:100%}.wk div{flex:1;font-size:12px;opacity:.9}.wk i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--btn);margin:4px auto 0;font-style:normal;color:var(--btnfg)}.wk .ok i{background:var(--acc);color:var(--pfg)}.wk .ok i svg{width:18px;height:18px;fill:currentColor}.wk .tdy{font-weight:800}
@@ -124,7 +124,8 @@ html.hc .card,html.hc .row,html.hc .panel,html.hc .tile,html.hc .lv{border:2px s
  /* levels */
  .tiers{justify-content:flex-start}.tier{font-size:13px;padding:4px 12px}.lvgrid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}.lv{padding:12px 4px;border-radius:16px}.lv b{font-size:19px}
  #custom .cols{grid-template-columns:minmax(300px,480px) minmax(0,1fr)}
- #custom #shapes{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));justify-content:stretch;align-content:start;gap:10px}#custom #shapes button{width:auto;height:auto;aspect-ratio:1;padding:10px;border-radius:16px}#genBtn{align-self:flex-start}
+ #custom #shapes{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));justify-content:stretch;align-content:start;gap:10px}#custom #shapes button{width:auto;height:auto;aspect-ratio:1;padding:10px;border-radius:16px}
+ #custom #shapes{max-height:calc(100dvh - 330px);min-height:300px}#genBtn{align-self:flex-start}
  /* settings */
  #settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start;align-items:start}#settings .row.col{justify-content:space-between}#settings .sws{justify-content:flex-start}#settings>.hd,#settings>.note{grid-column:1/-1}.row{padding:18px 20px}
  /* game: side panel + large board */
@@ -199,7 +200,7 @@ html.hc #app{background:var(--bg)}
 <main id="app">
 <section id="home" class="page home"><div class="hud"><div class="chip" id="starChip"><i data-ic="stars"></i><b id="starN">0</b></div><div class="chip" id="streakChip"><i data-ic="flame"></i><b id="streakN">0</b></div><div class="chip" id="achChip"><i data-ic="trophy"></i><b id="achN">0</b></div></div>
 <div class="cards"><div class="card" id="leagueCard"><b data-i="leagues"></b><div class="art" id="leagueIc"></div><span class="note" id="leagueName"></span><button id="leagueBtn" data-i="open"></button></div>
-<div class="card" id="chCard"><b data-i="challenge"></b><span class="note" id="chDate"></span><div class="art" id="chIc"></div><button id="chBtn"></button></div></div>
+<div class="card" id="chCard"><b data-i="challenge"></b><div class="art" id="chIc"></div><span class="note" id="chDate"></span><button id="chBtn"></button></div></div>
 <div class="modes"><button id="taBtn" class="pill2"><i data-ic="timer"></i><span><b data-i="mode_ta"></b><small id="taBest"></small></span></button><button id="endBtn" class="pill2"><i data-ic="inf"></i><span><b data-i="mode_end"></b><small id="endBest"></small></span></button></div>
 <div class="brand"><h1>Arrow Zen</h1><div class="lvlrow"><button id="lvlBtn" class="gridbtn" data-ia="levels"><i data-ic="dots"></i></button><div class="lvl"><span data-i="level"></span> <span id="lvTxt">1</span></div></div><div id="homeDiff"></div></div>
 <button id="playBtn" class="pri big"></button></section>
@@ -216,12 +217,12 @@ html.hc #app{background:var(--bg)}
 <div id="coShapes" class="pg"><div class="glhead"><div class="glring" id="glRing"></div><div><b id="glCount"></b><small id="glSub"></small></div><span class="of" id="glOf"></span></div><button id="glNext" class="pri" style="width:100%"></button><div class="chips" id="glFilter"></div><div id="grid"></div><div class="note" id="coTroph"></div></div>
 <div id="coAch" class="pg" hidden><div class="note" id="achCount"></div><div id="achList" class="ladder"></div></div></section>
 <section id="custom" class="page"><h2 class="hd" data-i="gen_title"></h2><div class="cols"><div class="cl">
-<div class="panel"><div class="note" style="font-size:14px" data-i="gen_intro"></div><h3 data-i="gen_how"></h3><ul><li data-i="gen_b1"></li><li data-i="gen_b2"></li><li data-i="gen_b3"></li><li data-i="gen_b4"></li></ul></div>
+<div class="note" style="font-size:14px" data-i="gen_intro"></div>
 <div class="note" id="lockNote" hidden data-i="gen_locked"></div>
 <div class="sl g-w"><span><em style="font-style:normal" data-i="gen_w"></em><b id="cwV">35</b></span><input id="cw" type="range" min="20" max="100" value="35"><small data-i="gen_w_h"></small></div>
 <div class="sl g-h"><span><em style="font-style:normal" data-i="gen_h"></em><b id="chV">35</b></span><input id="ch" type="range" min="20" max="100" value="35"><small data-i="gen_h_h"></small></div>
 <button id="genBtn" class="pri" data-i="gen_go"></button></div>
-<div class="cr"><div class="sl g-s"><span><em style="font-style:normal" data-i="gen_shape"></em><b id="genCells"></b></span><small data-i="gen_shape_h"></small></div><div id="shapes"></div></div></div></section>
+<div class="cr"><div class="sl g-s"><span><em style="font-style:normal" data-i="gen_shape"></em><b id="genCells"></b></span><small data-i="gen_shape_h"></small></div><div class="chips" id="shF"></div><div class="note" id="shSel"></div><div id="shapes"></div></div></div></section>
 <section id="settings" class="page"><h2 class="hd" data-i="st_title"></h2>
 <div class="stcol"><div class="panel prc" id="prCard"><div class="prsum"><span class="prav" id="prAv"></span><span class="prtx"><b id="prName"></b><small id="prMeta"></small></span><div class="prbtns"><button id="prAvBtn" data-i="pr_avatar"></button><button id="prEdit" data-i="pr_edit"></button></div></div><div class="prnums"><div><b id="prLv"></b><span data-i="pr_level"></span></div><div><b id="prSt"></b><span data-i="pr_stars"></span></div><div><b id="prXp"></b><span data-i="pr_xp"></span></div></div><div id="prBody" class="prchips"></div></div>
 <div class="row col"><span data-i="st_lang"></span><div class="seg" id="langSel"><button data-v="en">English</button><button data-v="fa">فارسی</button></div></div></div>

@@ -106,7 +106,8 @@ async function newLevel(c){custom=c||null;clearSave();hidePages();$('game').hidd
  else if(custom&&custom.mode){cfg=levelConfig(custom.lv);cfg.lives=3;fill=false}
  else if(custom&&custom.w){cfg=levelConfig(P.level,custom.w,custom.h);shape=custom.shape;if(fill){cfg.w=Math.min(cfg.w,K.MAXFILL);cfg.h=Math.min(cfg.h,K.MAXFILL)}}
  else{const n=custom&&custom.replay?custom.replay:P.level;cfg=levelConfig(n);seed=campaignSeed(n);setSeed(seed);shape=shouldApplyShape(cfg,rnd())?SHAPES[(Math.imul(n,37)>>>0)%SHAPES.length]:null;vv=Math.floor(n/SHAPES.length)%8;setSeed(null);if(fill){cfg.w=Math.min(cfg.w,K.MAXFILL);cfg.h=Math.min(cfg.h,K.MAXFILL)}}
- curShape=shape;let walls=null;if(shape){const im=await loadShape(shape);if(im){walls=wallsFromImage(im,cfg.w,cfg.h);if(vv){let a=walls;if(vv&4){a=a[0].map((_,y)=>a.map(c=>c[y]));[cfg.w,cfg.h]=[cfg.h,cfg.w]}if(vv&1)a=a.slice().reverse();if(vv&2)a=a.map(c=>c.slice().reverse());walls=a}}}
+ curShape=shape;let walls=null;if(shape){const im=await loadShape(shape);if(im){walls=wallsFromImage(im,cfg.w,cfg.h);if(!custom||custom.replay){const fr=walls.reduce((s,c)=>s+c.filter(v=>!v).length,0)/(cfg.w*cfg.h);cfg.maxLen=Math.max(cfg.tier>=5?2:3,Math.round(cfg.maxLen*Math.min(1,fr+.1)))}
+  if(vv){let a=walls;if(vv&4){a=a[0].map((_,y)=>a.map(c=>c[y]));[cfg.w,cfg.h]=[cfg.h,cfg.w]}if(vv&1)a=a.slice().reverse();if(vv&2)a=a.map(c=>c.slice().reverse());walls=a}}}
  runGen(cfg,walls,fill,seed,l=>setLevel(l,cfg.lives,null,custom&&custom.mode==='endless'&&run?run.lives:null))}
 function play(){const s=readSave();if(!s)return newLevel();custom=s.custom;curShape=s.shape||null;hidePages();$('game').hidden=false;$('winOv').hidden=$('overOv').hidden=true;$('overSub').hidden=true;resize();
  setLevel(s.initial,s.maxLives,s.cur,s.lives,{hints:s.hints,undos:s.undos,stack:s.stack});if(lives<=0)over()}
@@ -383,7 +384,7 @@ const RENDER={
  _profile(){const S=P.stats,stars=Object.values(P.stars).reduce((a,b)=>a+b,0),T=(e,n,l)=>`<div class="stt"><i>${e}</i><div><b>${n}</b><span>${l}</span></div></div>`;
   $('prAv').textContent=AVATARS[P.avatar%AVATARS.length];$('prName').textContent=P.name;$('prLv').textContent=nf(P.level);$('prSt').textContent=nf(stars);$('prXp').textContent=nf(P.xp||0);
   $('prBody').innerHTML=[T('✅',nf(Math.max(0,P.level-1)),tt('s_levels')),T('⭐',nf(Object.values(P.stars).filter(v=>v>=3).length),tt('s_3star')),T('➤',nf(S.arrows||0),tt('s_arrows')),T('🗓',nf(Object.keys(P.daily).length),tt('s_dailies')),T('🖼',nf(SHAPES.filter(n=>P.shapes[n]).length)+'/'+nf(SHAPES.length),tt('s_shapes')),T('❤',nf(S.flawless||0),tt('s_flawless')),T('⚡','x'+nf(S.bestCombo||0),tt('s_combo')),T('🔥',nf(streakNow()),tt('s_daystreak',{b:nf(S.bestStreak||0)})),T('💡',nf(P.items.hints),tt('s_hints'))].join('')},
- custom(){const lk=P.level<K.GEN_UNLOCK;$('lockNote').hidden=!lk;$('genBtn').disabled=lk;syncSliders()},
+ custom(){renderShapePick();const lk=P.level<K.GEN_UNLOCK;$('lockNote').hidden=!lk;$('genBtn').disabled=lk;syncSliders()},
  settings(){syncSet();renderProfile()}};
 function renderProfile(){RENDER._profile();const tr=tierOf(P.xp||0),stars=Object.values(P.stars).reduce((a,b)=>a+b,0);$('prMeta').textContent=tt('tier_'+tr.id)+' · ⭐ '+nf(stars)}
 // ---- settings
@@ -414,8 +415,13 @@ $('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.p)};
 // ---- generator page
 let cShape=null;
 function syncSliders(){const mx=P.fill?K.MAXFILL:K.GEN_MAX;['cw','ch'].forEach(id=>{const e=$(id);e.min=K.GEN_MIN;e.max=mx;if(+e.value>mx)e.value=mx;$(id+'V').textContent=nf(e.value)});$('genCells').textContent=tt('gen_cells',{n:nf($('cw').value*$('ch').value)})}
-$('shapes').innerHTML=['',...SHAPES].map(n=>`<button data-s="${n}" class="${n?'':'on'}">${n?`<img src="assets/shapes/${n}.png" alt="" loading="lazy" decoding="async">`:'▭'}</button>`).join('');
-$('shapes').onclick=e=>{const b=e.target.closest('button');if(!b)return;cShape=b.dataset.s||null;[...$('shapes').children].forEach(x=>x.classList.toggle('on',x===b))};
+let cF='all';
+function renderShapePick(){$('shF').innerHTML=[['all','gl_all'],['0','sh_easy'],['1','sh_medium'],['2','sh_hard']].map(([k,l])=>`<button data-f="${k}"${k===cF?' class="on"':''}>${tt(l)}</button>`).join('');
+ $('shapes').innerHTML=['',...SHAPE_ORDER.filter(n=>cF==='all'||smTier(n)===+cF)].map(n=>`<button data-s="${n}" class="${(n||null)===cShape?'on':''}">${n?`<img src="assets/shapes/${n}.png" alt="" loading="lazy" decoding="async">`:'▭'}</button>`).join('');
+ $('shapes').scrollTop=0;shSelTxt()}
+function shSelTxt(){$('shSel').textContent=tt('gen_sel',{n:cShape?shapeName(cShape):tt('gen_rect')})}
+$('shF').onclick=e=>{const b=e.target.closest('button');if(!b)return;cF=b.dataset.f;renderShapePick()};
+$('shapes').onclick=e=>{const b=e.target.closest('button');if(!b)return;cShape=b.dataset.s||null;[...$('shapes').children].forEach(x=>x.classList.toggle('on',x===b));shSelTxt()};
 ['cw','ch'].forEach(id=>$(id).oninput=syncSliders);
 $('genBtn').onclick=()=>{if(readSave()&&!confirm(tt('confirm_discard')))return;newLevel({w:+$('cw').value,h:+$('ch').value,shape:cShape})};
 // ---- daily / league / game buttons
