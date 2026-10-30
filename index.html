@@ -196,7 +196,15 @@ html.hc #app{background:var(--bg)}
 <linearGradient id="sh-silver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EEF1F8"/><stop offset="1" stop-color="#97A1B8"/></linearGradient>
 <linearGradient id="sh-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE794"/><stop offset="1" stop-color="#DE9F1E"/></linearGradient>
 <linearGradient id="sh-platinum" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C6F5F8"/><stop offset="1" stop-color="#4DAFC4"/></linearGradient>
-<linearGradient id="sh-diamond" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D5C8FF"/><stop offset="1" stop-color="#7352FF"/></linearGradient></defs></svg>
+<linearGradient id="sh-diamond" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D5C8FF"/><stop offset="1" stop-color="#7352FF"/></linearGradient>
+<linearGradient id="sh-emerald" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A8F5C8"/><stop offset="1" stop-color="#1FA971"/></linearGradient>
+<linearGradient id="sh-ruby" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB3C1"/><stop offset="1" stop-color="#D6234F"/></linearGradient>
+<linearGradient id="sh-sapphire" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B5D4FF"/><stop offset="1" stop-color="#2D6BE0"/></linearGradient>
+<linearGradient id="sh-master" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8C6FF"/><stop offset="1" stop-color="#9B3FD8"/></linearGradient>
+<linearGradient id="sh-grandmaster" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD1A6"/><stop offset="1" stop-color="#E5681B"/></linearGradient>
+<linearGradient id="sh-champion" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B5FFF4"/><stop offset="1" stop-color="#0FB8A8"/></linearGradient>
+<linearGradient id="sh-legend" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE9A8"/><stop offset="1" stop-color="#E8236B"/></linearGradient>
+</defs></svg>
 <main id="app">
 <section id="home" class="page home"><div class="hud"><div class="chip" id="starChip"><i data-ic="stars"></i><b id="starN">0</b></div><div class="chip" id="streakChip"><i data-ic="flame"></i><b id="streakN">0</b></div><div class="chip" id="achChip"><i data-ic="trophy"></i><b id="achN">0</b></div></div>
 <div class="cards"><div class="card" id="leagueCard"><b data-i="leagues"></b><div class="art" id="leagueIc"></div><span class="note" id="leagueName"></span><button id="leagueBtn" data-i="open"></button></div>
@@ -221,7 +229,7 @@ html.hc #app{background:var(--bg)}
 <div class="note" id="lockNote" hidden data-i="gen_locked"></div>
 <div class="sl g-w"><span><em style="font-style:normal" data-i="gen_w"></em><b id="cwV">35</b></span><input id="cw" type="range" min="20" max="100" value="35"><small data-i="gen_w_h"></small></div>
 <div class="sl g-h"><span><em style="font-style:normal" data-i="gen_h"></em><b id="chV">35</b></span><input id="ch" type="range" min="20" max="100" value="35"><small data-i="gen_h_h"></small></div>
-<button id="genBtn" class="pri" data-i="gen_go"></button></div>
+<button id="genCont" class="sec big" hidden data-i="cont"></button><button id="genBtn" class="pri" data-i="gen_go"></button></div>
 <div class="cr"><div class="sl g-s"><span><em style="font-style:normal" data-i="gen_shape"></em><b id="genCells"></b></span><small data-i="gen_shape_h"></small></div><div class="chips" id="shF"></div><div class="note" id="shSel"></div><div id="shapes"></div></div></div></section>
 <section id="settings" class="page"><h2 class="hd" data-i="st_title"></h2>
 <div class="stcol"><div class="panel prc" id="prCard"><div class="prsum"><span class="prav" id="prAv"></span><span class="prtx"><b id="prName"></b><small id="prMeta"></small></span><div class="prbtns"><button id="prAvBtn" data-i="pr_avatar"></button><button id="prEdit" data-i="pr_edit"></button></div></div><div class="prnums"><div><b id="prLv"></b><span data-i="pr_level"></span></div><div><b id="prSt"></b><span data-i="pr_stars"></span></div><div><b id="prXp"></b><span data-i="pr_xp"></span></div></div><div id="prBody" class="prchips"></div></div>
@@ -242,7 +250,7 @@ html.hc #app{background:var(--bg)}
 <div id="mid"><div id="diff"></div><div id="lives"></div></div><button id="hintBtn"><i data-ic="bulb"></i><span data-i="hint"></span><em id="hintCnt" class="bdg2"></em><kbd class="kb">H</kbd></button></div>
 <div id="track"><div id="prog"></div></div><div id="wrap"><div id="area"><canvas id="cv"></canvas><button class="fab" id="resetBtn" data-ia="a_reset"><i data-ic="fit"></i></button><button class="fab" id="undoBtn" data-ia="a_undo"><i data-ic="undo"></i><em id="undoCnt" class="bdg"></em><kbd class="kb">U</kbd></button><button class="fab" id="guideBtn" data-ia="a_guides"><i data-ic="hash"></i></button>
 <div class="ov" id="loadOv" hidden><span data-i="loading"></span><div id="loadT"><div id="loadBar"></div></div></div>
-<div class="ov" id="winOv" hidden><div class="wcard"><div class="wbadge"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="wc" cx="32" cy="32" r="28"/><path class="wk" d="M19 33.5l9.5 9.5L46 24"/></svg></div><div class="wtitle" data-i="won"></div><div id="winStars" class="stars"></div><div id="winXp" class="wxp" hidden></div><div id="winAch" class="achl"></div><div class="btns"><button id="shareBtn" class="sec" data-i="share"></button><button id="nextBtn" data-i="next"></button></div></div></div>
+<div class="ov" id="winOv" hidden><div class="wcard"><div class="wbadge"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="wc" cx="32" cy="32" r="28"/><path class="wk" d="M19 33.5l9.5 9.5L46 24"/></svg></div><div class="wtitle" id="winTitle"></div><div id="winStars" class="stars"></div><div id="winXp" class="wxp" hidden></div><div id="winAch" class="achl"></div><div class="btns"><button id="nextBtn" data-i="next"></button></div></div></div>
 <div class="ov" id="overOv" hidden><span id="overMsg" data-i="lost"></span><span id="overSub" hidden></span><button id="refillBtn" class="sec" hidden></button><button id="retryBtn" data-i="retry"></button></div></div></div></section>
 <div id="shSheet" hidden><div class="shc"><div class="shimg" id="shImg"></div><h3 id="shName"></h3><div class="note" id="shMeta"></div><div class="note" id="shDiffT"></div><div class="chips" id="shDiff"></div><div class="shbar" id="shBarW"><div class="pbar"><i id="shBar" style="width:0"></i></div><span class="note" id="shBarT"></span></div><div class="note" id="shMsg"></div><div class="btns"><button id="shClose" class="sec" data-i="close"></button><button id="shPlay" class="pri" style="padding:12px 30px;font-size:16px"></button></div></div></div>
 <div id="toast" class="toast" hidden role="status" aria-live="polite"></div></main><script src="i18n.js"></script><script src="generator.js"></script><script src="game.js"></script></body></html>
