@@ -39,4 +39,7 @@ No sound and no vibration. The generator caps the per-snake search at 500 nodes 
 
 ## Credits
 
-The 500 collectible shapes are silhouettes of [Material Icons](https://github.com/google/material-design-icons) by Google, licensed under the Apache License 2.0 (see `assets/shapes/LICENSE-material-icons.txt`).
+The 500 collectible shapes are silhouettes of general-purpose pictograms:
+
+- [Material Icons](https://github.com/google/material-design-icons) by Google, Apache License 2.0 (`assets/shapes/LICENSE-material-icons.txt`)
+- [Noto Emoji](https://github.com/googlefonts/noto-emoji) by Google, SIL Open Font License 1.1 (`assets/shapes/LICENSE-noto-emoji-OFL.txt`)
